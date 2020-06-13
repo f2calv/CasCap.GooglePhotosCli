@@ -1,0 +1,29 @@
+{
+  "profiles": {
+    "GooglePhotosCli": {
+      "commandName": "Project",
+
+      //"commandLineArgs": "albums --help",
+      //"commandLineArgs": "albums add -t \"my album name\""
+      //"commandLineArgs": "albums download -t \"my album name\" -o c:/temp/download"
+      //"commandLineArgs": "albums download -t \"my album name\" -o c:/temp/download --maxwidth 100"
+      //"commandLineArgs": "albums download -t \"my album name\" -o c:/temp/download --maxheight 100"
+      //"commandLineArgs": "albums download -t \"my album name\" -o c:/temp/download --maxheight 100 --crop"
+      //"commandLineArgs": "albums download -t \"my album name\" -o c:/temp/download --maxheight 100 --crop --exif"
+      "commandLineArgs": "albums download -t \"my album name\" -o c:/temp/download --maxheight 100 --crop --exif --overwrite"
+      //"commandLineArgs": "albums list"
+      //"commandLineArgs": "albums list --duplicates"
+      //"commandLineArgs": "albums sync"
+
+      //"commandLineArgs": "logout"
+
+      //"commandLineArgs": "mediaitems --help"
+      //"commandLineArgs": "mediaitems duplicates"
+      //"commandLineArgs": "mediaitems list"
+      //"commandLineArgs": "mediaitems upload -s C:/temp/fotos"
+      //"commandLineArgs": "mediaitems sync"
+
+      //"commandLineArgs": "sync"
+    }
+  }
+}

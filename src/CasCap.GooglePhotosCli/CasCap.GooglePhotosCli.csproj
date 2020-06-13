@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks Condition="$(MSBuildVersion) &gt;= 16.8.0">$(TargetFrameworks);net5.0</TargetFrameworks>
+    <PublishTrimmed>true</PublishTrimmed>
+    <AssemblyName>googlephotos</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <Description>Google Photos CLI Tool</Description>
+    <PackAsTool>true</PackAsTool>
+    <PackageTags>google,photos,command line interface,cli,backup,sync,tool</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BetterConsoleTables" Version="1.1.2" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
+    <PackageReference Include="ShellProgressBar" Version="5.0.0" />
+    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="3.0.0" />
+    <PackageReference Include="McMaster.Extensions.Hosting.CommandLine" Version="3.0.0" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.2" />
+    <PackageReference Include="CasCap.Common.Caching" Version="1.0.15" />
+    <PackageReference Include="CasCap.Common.Serialisation.Json" Version="1.0.15" />
+    <PackageReference Include="CasCap.Apis.GooglePhotos" Version="1.0.13" />
+  </ItemGroup>
+
+</Project>
