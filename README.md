@@ -5,8 +5,8 @@
 [azdo-badge]: https://dev.azure.com/f2calv/github/_apis/build/status/f2calv.CasCap.GooglePhotosCli?branchName=master
 [azdo-url]: https://dev.azure.com/f2calv/github/_build/latest?definitionId=11&branchName=master
 [azdo-coverage-url]: https://img.shields.io/azure-devops/coverage/f2calv/github/11
-[cascap.apis.googlephotoscli-badge]: https://img.shields.io/nuget/v/CasCap.GooglePhotosCli?color=blue
-[cascap.apis.googlephotoscli-url]: https://nuget.org/packages/CasCap.GooglePhotosCli
+[cascap.apis.googlephotoscli-badge]: https://img.shields.io/nuget/v/googlephotos?color=blue
+[cascap.apis.googlephotoscli-url]: https://nuget.org/packages/googlephotos
 
 [![Build Status][azdo-badge]][azdo-url] <!-- ![Code Coverage][azdo-coverage-url] --> [![Nuget][cascap.apis.googlephotoscli-badge]][cascap.apis.googlephotoscli-url]
 
