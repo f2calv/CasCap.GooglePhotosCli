@@ -4,7 +4,6 @@
     <OutputType>Exe</OutputType>
     <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
     <TargetFrameworks Condition="$(MSBuildVersion) &gt;= 16.8.0">$(TargetFrameworks);net5.0</TargetFrameworks>
-    <PublishTrimmed>true</PublishTrimmed>
     <AssemblyName>googlephotos</AssemblyName>
   </PropertyGroup>
 
