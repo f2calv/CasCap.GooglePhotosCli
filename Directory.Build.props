@@ -34,6 +34,7 @@
   
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <NoWarn>IDE1006</NoWarn>
+    <NoWarn>CS0162</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
