@@ -17,7 +17,7 @@
   <ItemGroup>
     <PackageReference Include="BetterConsoleTables" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
-    <PackageReference Include="ShellProgressBar" Version="5.0.0" />
+    <PackageReference Include="ShellProgressBar" Version="5.1.0" />
     <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="3.0.0" />
     <PackageReference Include="McMaster.Extensions.Hosting.CommandLine" Version="3.0.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.2" />
