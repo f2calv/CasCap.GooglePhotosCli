@@ -17,13 +17,13 @@
   <ItemGroup>
     <PackageReference Include="BetterConsoleTables" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
-    <PackageReference Include="ShellProgressBar" Version="5.0.0" />
-    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="3.0.0" />
-    <PackageReference Include="McMaster.Extensions.Hosting.CommandLine" Version="3.0.0" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.2" />
-    <PackageReference Include="CasCap.Common.Caching" Version="1.0.15" />
-    <PackageReference Include="CasCap.Common.Serialisation.Json" Version="1.0.15" />
-    <PackageReference Include="CasCap.Apis.GooglePhotos" Version="1.0.13" />
+    <PackageReference Include="ShellProgressBar" Version="5.1.0" />
+    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="3.1.0" />
+    <PackageReference Include="McMaster.Extensions.Hosting.CommandLine" Version="3.1.0" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.3" />
+    <PackageReference Include="CasCap.Common.Caching" Version="1.0.20" />
+    <PackageReference Include="CasCap.Common.Serialisation.Json" Version="1.0.20" />
+    <PackageReference Include="CasCap.Apis.GooglePhotos" Version="1.0.16" />
   </ItemGroup>
 
 </Project>

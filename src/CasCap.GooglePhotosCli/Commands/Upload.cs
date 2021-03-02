@@ -85,7 +85,7 @@ namespace CasCap.Commands
                 foreach (var f in checkForUploadableFileTypes.OrderBy(p => p.Extension))
                 {
                     var status = string.Empty;
-                    if (!_googlePhotosSvc.IsFileUploadableByExtension(f.Extension))
+                    if (!GooglePhotosService.IsFileUploadableByExtension(f.Extension))
                         status = "Unsupported file extension, will not be uploaded.";
                     table.AddRow(f.Extension, f.MimeType, f.Count, f.TotalBytes.GetSizeInMB().ToString("0.0"), status);
                 }
@@ -96,7 +96,7 @@ namespace CasCap.Commands
 
                 //add all uploadable files into a new collection
                 foreach (var fileInfo in allFileInfos)
-                    if (_googlePhotosSvc.IsFileUploadable(fileInfo.FullName))
+                    if (GooglePhotosService.IsFileUploadable(fileInfo.FullName))
                         items.Add(new MyMediaFileItem { fileInfo = fileInfo });
             }
             if (items.IsNullOrEmpty())
