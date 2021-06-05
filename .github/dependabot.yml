@@ -1,0 +1,52 @@
+version: 2
+updates:
+- package-ecosystem: nuget
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "04:00"
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: CasCap.Common.Serialisation.Json
+    versions:
+    - 1.0.18
+    - 1.0.19
+    - 1.0.20
+    - 1.0.22
+    - 1.0.24
+  - dependency-name: CasCap.Common.Caching
+    versions:
+    - 1.0.18
+    - 1.0.19
+    - 1.0.20
+    - 1.0.22
+    - 1.0.24
+  - dependency-name: CasCap.Apis.GooglePhotos
+    versions:
+    - 1.0.14
+    - 1.0.15
+    - 1.0.16
+  - dependency-name: Microsoft.NET.Test.Sdk
+    versions:
+    - 16.8.3
+    - 16.9.1
+  - dependency-name: coverlet.collector
+    versions:
+    - 3.0.2
+    - 3.0.3
+  - dependency-name: coverlet.msbuild
+    versions:
+    - 3.0.2
+    - 3.0.3
+  - dependency-name: SixLabors.ImageSharp
+    versions:
+    - 1.0.3
+  - dependency-name: ShellProgressBar
+    versions:
+    - 5.1.0
+  - dependency-name: McMaster.Extensions.CommandLineUtils
+    versions:
+    - 3.1.0
+  - dependency-name: McMaster.Extensions.Hosting.CommandLine
+    versions:
+    - 3.1.0
