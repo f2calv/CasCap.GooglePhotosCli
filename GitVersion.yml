@@ -1,7 +1,7 @@
 next-version: 0.1.0
 mode: MainLine
 branches:
-  master:
+  main:
     tag: ''
   feature:
     tag: ci
