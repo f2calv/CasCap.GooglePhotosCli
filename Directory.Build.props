@@ -5,6 +5,7 @@
     <LangVersion>9.0</LangVersion>
     <!--nullable we enable on a per project basis-->
     <!--<Nullable>enable</Nullable>-->
+    <UserSecretsId>255ba51e-c46d-40c4-9420-80d485ea10fe</UserSecretsId>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -28,7 +29,7 @@
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
   
-  <PropertyGroup Condition="'$(TF_BUILD)' == 'true'">
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true' OR '$(TF_BUILD)' == 'true'">
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>
   
