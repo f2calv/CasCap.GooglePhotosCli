@@ -417,7 +417,7 @@ namespace CasCap.Commands
                     focalLength = mediaItem.isVideo ? 0 : mediaItem.mediaMetadata.photo.focalLength,
                     apertureFNumber = mediaItem.isVideo ? 0 : mediaItem.mediaMetadata.photo.apertureFNumber,
                     isoEquivalent = mediaItem.isVideo ? 0 : mediaItem.mediaMetadata.photo.isoEquivalent,
-                    exposureTime = mediaItem.isVideo ? 0 : mediaItem.mediaMetadata.photo.exposureTime,
+                    exposureTime = mediaItem.isVideo ? null : mediaItem.mediaMetadata.photo.exposureTime,
 
                     fps = mediaItem.isVideo ? mediaItem.mediaMetadata.video.fps : 0,
                     status = mediaItem.isVideo ? mediaItem.mediaMetadata.video.status : string.Empty,

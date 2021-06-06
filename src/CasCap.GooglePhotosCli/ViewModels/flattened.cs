@@ -21,7 +21,7 @@ namespace CasCap.ViewModels
         public float focalLength { get; set; }//photo
         public float apertureFNumber { get; set; }//photo
         public int isoEquivalent { get; set; }//photo
-        public float exposureTime { get; set; }//photo
+        public string exposureTime { get; set; }//photo
 
         public double fps { get; set; }//video
         public string status { get; set; }//video

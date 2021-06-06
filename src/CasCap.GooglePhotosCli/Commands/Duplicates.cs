@@ -261,7 +261,7 @@ namespace CasCap.Commands
                         focalLength = myGroup.HasFlag(GroupByProperty.focalLength) ? item.focalLength : float.MinValue,
                         apertureFNumber = myGroup.HasFlag(GroupByProperty.apertureFNumber) ? item.apertureFNumber : float.MinValue,
                         isoEquivalent = myGroup.HasFlag(GroupByProperty.isoEquivalent) ? item.isoEquivalent : int.MinValue,
-                        exposureTime = myGroup.HasFlag(GroupByProperty.exposureTime) ? item.exposureTime : float.MinValue,
+                        exposureTime = myGroup.HasFlag(GroupByProperty.exposureTime) ? item.exposureTime : null,
                         //video
                         fps = myGroup.HasFlag(GroupByProperty.fps) ? item.fps : float.MinValue,
                         status = myGroup.HasFlag(GroupByProperty.status) ? item.status : null,
