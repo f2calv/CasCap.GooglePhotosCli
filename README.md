@@ -8,7 +8,7 @@
 [cascap.apis.googlephotoscli-badge]: https://img.shields.io/nuget/v/googlephotos?color=blue
 [cascap.apis.googlephotoscli-url]: https://nuget.org/packages/googlephotos
 
-[![Build Status][azdo-badge]][azdo-url] <!-- ![Code Coverage][azdo-coverage-url] --> [![Nuget][cascap.apis.googlephotoscli-badge]][cascap.apis.googlephotoscli-url]
+![CI](https://github.com/f2calv/CasCap.GooglePhotosCli/actions/workflows/ci.yml/badge.svg) [![Coverage Status](https://coveralls.io/repos/github/f2calv/CasCap.GooglePhotosCli/badge.svg?branch=main)](https://coveralls.io/github/f2calv/CasCap.GooglePhotosCli?branch=main) [![SonarCloud Coverage](https://sonarcloud.io/api/project_badges/measure?project=f2calv_CasCap.GooglePhotosCli&metric=code_smells)](https://sonarcloud.io/component_measures/metric/code_smells/list?id=f2calv_CasCap.GooglePhotosCli) [![Nuget][cascap.apis.googlephotoscli-badge]][cascap.apis.googlephotoscli-url]
 
 This is an _unofficial_ Google Photos CLI which can be installed as a .NET Global Tool
 
