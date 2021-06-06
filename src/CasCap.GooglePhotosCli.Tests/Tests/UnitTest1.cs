@@ -1,16 +1,28 @@
+using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 namespace CasCap.GooglePhotosCli.Tests
 {
-    public class UnitTest1 : TestBase
+    public class CliTests : TestBase
     {
-        public UnitTest1(ITestOutputHelper output) : base(output) { }
+        public CliTests(ITestOutputHelper output) : base(output) { }
 
         [Fact]
-        public void Test1()
+        public async Task Test1()
         {
             //todo: how best to test a command line application?
-            Assert.True(true);
+            try
+            {
+                _ = await _googlePhotosSvc.CreateAlbumAsync("test");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+                Debugger.Break();
+            }
+            Assert.True(true);//assert true regardless of actual outcome, will add full tests later
         }
     }
 }
