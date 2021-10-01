@@ -23,7 +23,7 @@
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.3" />
     <PackageReference Include="CasCap.Common.Caching" Version="1.0.36" />
     <PackageReference Include="CasCap.Common.Serialisation.Json" Version="1.0.36" />
-    <PackageReference Include="CasCap.Apis.GooglePhotos" Version="1.0.23" />
+    <PackageReference Include="CasCap.Apis.GooglePhotos" Version="1.0.24" />
   </ItemGroup>
 
 </Project>
