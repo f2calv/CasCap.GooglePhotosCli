@@ -86,7 +86,7 @@ namespace CasCap.Services
             {
                 //if we use Func and go create the cacheEntry, then we lock here to prevent multiple going at the same time
                 //https://www.hanselman.com/blog/EyesWideOpenCorrectCachingIsAlwaysHard.aspx
-                using (await locker.LockAsync(key))
+                using (await AsyncDuplicateLock.LockAsync(key))
                 {
                     // Key not in cache, so get data.
                     cacheEntry = await createItem();
