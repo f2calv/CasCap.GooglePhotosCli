@@ -25,7 +25,7 @@ Key functionality;
 The Google Photos CLI is distributed as a [.NET Core Global Tool](https://docs.microsoft.com/en-us/dotnet/core/tools/global-tools), to install the tool follow these steps;
 
 - Follow [these instructions](https://github.com/f2calv/CasCap.Apis.GooglePhotos#google-photos-api-set-up) to set-up OAuth login details.
-- Download and install either the [.NET Core 3.1 SDK](https://dotnet.microsoft.com/download/dotnet-core/3.1) or [.NET 5.0 SDK](https://dotnet.microsoft.com/download/dotnet/5.0).
+- Download and install either the [.NET Core 3.1 SDK](https://dotnet.microsoft.com/download/dotnet-core/3.1) or [.NET 6.0 SDK](https://dotnet.microsoft.com/download/dotnet/6.0).
 - From a command line shell install the tool `dotnet tool update --global googlephotos`
 
 Now check the tool is installed by entering `googlephotos` at a shell.
