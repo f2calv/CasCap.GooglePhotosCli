@@ -6,6 +6,7 @@
     <!--nullable we enable on a per project basis-->
     <!--<Nullable>enable</Nullable>-->
     <UserSecretsId>255ba51e-c46d-40c4-9420-80d485ea10fe</UserSecretsId>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -34,8 +35,10 @@
   </PropertyGroup>
   
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <!-- suppress roslyn naming convention messages -->
-    <NoWarn>IDE1006</NoWarn>
+    <!-- IDE1006 - suppress roslyn naming convention messages -->
+    <!-- IDE0079 - Remove unnecessary suppression -->
+    <!-- IDE0042 - Variable declaration can be deconstructed -->
+    <NoWarn>IDE1006;IDE0079;IDE0042</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <!-- suppress 'Unreachable code detected' -->
