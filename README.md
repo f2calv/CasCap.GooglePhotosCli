@@ -10,9 +10,11 @@
 
 ![CI](https://github.com/f2calv/CasCap.GooglePhotosCli/actions/workflows/ci.yml/badge.svg) [![Coverage Status](https://coveralls.io/repos/github/f2calv/CasCap.GooglePhotosCli/badge.svg?branch=main)](https://coveralls.io/github/f2calv/CasCap.GooglePhotosCli?branch=main) [![SonarCloud Coverage](https://sonarcloud.io/api/project_badges/measure?project=f2calv_CasCap.GooglePhotosCli&metric=code_smells)](https://sonarcloud.io/component_measures/metric/code_smells/list?id=f2calv_CasCap.GooglePhotosCli) [![Nuget][cascap.apis.googlephotoscli-badge]][cascap.apis.googlephotoscli-url]
 
-This is an _unofficial_ Google Photos CLI which can be installed as a .NET Global Tool
+This is an _unofficial_ Google Photos CLI which can be installed as a .NET Global Tool.
 
 Google Photos CLI is an _unofficial_ utility which leverages the [CasCap.Apis.GooglePhotos](https://github.com/f2calv/CasCap.Apis.GooglePhotos) library to perform common and helpful operations against the media items held in your Google Photos account.
+
+If you find this tool of use then please give it a thumbs-up by giving this repository a :star: ... :wink:
 
 Key functionality;
 
