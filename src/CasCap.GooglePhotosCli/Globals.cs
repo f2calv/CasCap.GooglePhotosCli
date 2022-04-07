@@ -1,6 +1,4 @@
-﻿using System;
-
-[Flags]
+﻿[Flags]
 public enum GroupByProperty
 {
     filename = 1,
