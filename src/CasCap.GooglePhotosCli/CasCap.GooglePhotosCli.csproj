@@ -22,7 +22,7 @@
     <PackageReference Include="McMaster.Extensions.Hosting.CommandLine" Version="4.0.1" />
     <PackageReference Include="SixLabors.ImageSharp" Version="2.1.0" />
     <PackageReference Include="CasCap.Common.Caching" Version="1.2.2" />
-    <PackageReference Include="CasCap.Common.Serialisation.Json" Version="1.2.2" />
+    <PackageReference Include="CasCap.Common.Serialisation.Json" Version="1.2.4" />
     <PackageReference Include="CasCap.Apis.GooglePhotos" Version="1.0.24" />
   </ItemGroup>
 
