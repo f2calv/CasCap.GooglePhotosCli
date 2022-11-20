@@ -1,4 +1,5 @@
-﻿using CasCap.Common.Extensions;
+﻿using AsyncKeyedLock;
+using CasCap.Common.Extensions;
 using CasCap.Logic;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
@@ -13,7 +14,7 @@ public class DiskCacheService
         _logger = logger;
     }
 
-    readonly AsyncDuplicateLock locker = new();
+    readonly AsyncKeyedLocker<string> locker = new();
 
     public string CacheRoot { get; set; } = string.Empty;
 
@@ -81,8 +82,7 @@ public class DiskCacheService
         else
         {
             //if we use Func and go create the cacheEntry, then we lock here to prevent multiple going at the same time
-            //https://www.hanselman.com/blog/EyesWideOpenCorrectCachingIsAlwaysHard.aspx
-            using (await AsyncDuplicateLock.LockAsync(key))
+            using (await locker.LockAsync(key, token).ConfigureAwait(false))
             {
                 // Key not in cache, so get data.
                 cacheEntry = await createItem();
