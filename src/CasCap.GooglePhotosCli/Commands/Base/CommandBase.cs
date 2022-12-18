@@ -249,7 +249,7 @@ internal abstract class CommandBase
 
             _console.WriteLine($"{ts.TotalHours} hours since last mediaItems sync, now checking for new mediaItems...");
             //get any new photos and add to the mediaItems cache
-            var newItems = await _googlePhotosSvc.GetMediaItemsByDateRangeAsync(_config.latestMediaItemCreation, DateTime.UtcNow);
+            var newItems = await _googlePhotosSvc.GetMediaItemsByDateRangeAsync(_config.latestMediaItemCreation, DateTime.UtcNow).ToListAsync();
             if (!newItems.IsNullOrEmpty())
             {
                 _console.WriteLine($"{newItems.Count} recent mediaItems discovered...");
@@ -288,7 +288,7 @@ internal abstract class CommandBase
                 () => _googlePhotosSvc.GetAlbumAsync(a.id));
             //_console.WriteLine($"\t{alb.mediaItemsCount}");
 
-            var mediaItemsA = await _diskCacheSvc.GetAsync($"album_mediaItems_{a.id}.json", () => _googlePhotosSvc.GetMediaItemsByAlbumAsync(a.id));
+            var mediaItemsA = await _diskCacheSvc.GetAsync($"album_mediaItems_{a.id}.json", () => _googlePhotosSvc.GetMediaItemsByAlbumAsync(a.id).ToListAsync());
             //todo: we probably need a dictionary check here also... as you never know with this API!
             var d = new Dictionary<string, MediaItem>();
             var ids = mediaItemsA.Select(p => p.id).ToList();

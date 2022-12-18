@@ -6,12 +6,6 @@ using McMaster.Extensions.CommandLineUtils;
 using ShellProgressBar;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Metadata.Profiles.Exif;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 namespace CasCap.Commands;
 
 [Command(Description = "Analyse and identify potential duplicate media items in a Google Photos account.")]
@@ -80,7 +74,7 @@ internal class Duplicates : CommandBase
                 throw new Exception("should never get hit...?");
 
             //get latest versions (i.e. with valid product urls)
-            var mediaItems = await _googlePhotosSvc.GetMediaItemsByIdsAsync(ids);
+            var mediaItems = await _googlePhotosSvc.GetMediaItemsByIdsAsync(ids).ToListAsync();
             await AnalyseExifs(mediaItems);
 
 
@@ -356,7 +350,7 @@ internal class Duplicates : CommandBase
             if (!File.Exists(filePath))
             {
                 _console.Write($"{j})\tdownloading {mediaItem.id} ...");
-                var bytes = await _googlePhotosSvc.DownloadBytes(mediaItem, download: true);
+                var bytes = await _googlePhotosSvc.DownloadBytes(mediaItem);
                 await File.WriteAllBytesAsync(filePath, bytes);
                 _console.WriteLine($"downloaded {((long)bytes.Length).GetSizeInMB()}MB");//todo: need a KB extension method here?
             }
