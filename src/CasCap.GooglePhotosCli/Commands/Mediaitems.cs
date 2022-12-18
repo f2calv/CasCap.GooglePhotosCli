@@ -2,7 +2,6 @@
 using CasCap.Common.Extensions;
 using CasCap.Services;
 using McMaster.Extensions.CommandLineUtils;
-using System.Threading.Tasks;
 namespace CasCap.Commands;
 
 [Command("mediaitems", Description = "Manage your media items i.e. photos & videos")]
@@ -28,7 +27,7 @@ internal class MediaItems : CommandBase
         public async override Task<int> OnExecuteAsync(CommandLineApplication app)
         {
             await base.OnExecuteAsync(app);
-            var mediaitems = await _googlePhotosSvc.GetMediaItemsAsync();
+            var mediaitems = await _googlePhotosSvc.GetMediaItemsAsync().ToListAsync();
             if (mediaitems.IsNullOrEmpty())
             {
                 _console.WriteLine("Sorry, no media items available...");

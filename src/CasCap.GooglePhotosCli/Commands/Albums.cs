@@ -148,7 +148,7 @@ internal class Albums : CommandBase
                 _console.WriteLine($"Album with title '{title}' not found!");
                 return 0;
             }
-            var mediaItems = await _googlePhotosSvc.GetMediaItemsByAlbumAsync(album.id);
+            var mediaItems = await _googlePhotosSvc.GetMediaItemsByAlbumAsync(album.id).ToListAsync();
             if (mediaItems.IsNullOrEmpty())
             {
                 _console.WriteLine($"Album with title '{title}' exists, but contains no media items!");
