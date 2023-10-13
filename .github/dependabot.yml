@@ -1,13 +1,20 @@
 version: 2
 updates:
-- package-ecosystem: nuget
-  directory: "/"
-  schedule:
-    interval: daily
-    time: "04:00"
-  open-pull-requests-limit: 10
-  ignore:
-  - dependency-name: Microsoft.NET.Test.Sdk
-  - dependency-name: Newtonsoft.Json
-  - dependency-name: coverlet.msbuild
-  - dependency-name: coverlet.collector
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      time: "04:00"
+
+  - package-ecosystem: nuget
+    directory: "/"
+    schedule:
+      interval: daily
+      time: "04:00"
+    open-pull-requests-limit: 10
+    ignore:
+    - dependency-name: Microsoft.NET.Test.Sdk
+    - dependency-name: Newtonsoft.Json
+    - dependency-name: coverlet.msbuild
+    - dependency-name: coverlet.collector
