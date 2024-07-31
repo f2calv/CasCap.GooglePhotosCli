@@ -198,7 +198,9 @@ internal abstract class CommandBase
 
     protected async Task<bool> SyncMediaItems()
     {
-        allMediaItems = await _diskCacheSvc.GetAsync($"{nameof(allMediaItems)}.json", () => _googlePhotosSvc.GetMediaItemsAsync());
+        //allMediaItems = await _diskCacheSvc.GetAsync<List<MediaItem>>($"{nameof(allMediaItems)}.json", () => _googlePhotosSvc.GetMediaItemsAsync());
+        //TODO: revert to use caching line above here!
+        allMediaItems = await _googlePhotosSvc.GetMediaItemsAsync().ToListAsync();
         _config.latestMediaItemCreation = allMediaItems.Max(p => p.mediaMetadata.creationTime);
 
         //check for duplicate MediaItemIds - it shouldn't be possible to have but somehow I had them...
@@ -288,7 +290,10 @@ internal abstract class CommandBase
                 () => _googlePhotosSvc.GetAlbumAsync(a.id));
             //_console.WriteLine($"\t{alb.mediaItemsCount}");
 
-            var mediaItemsA = await _diskCacheSvc.GetAsync($"album_mediaItems_{a.id}.json", () => _googlePhotosSvc.GetMediaItemsByAlbumAsync(a.id).ToListAsync());
+            //var mediaItemsA = await _diskCacheSvc.GetAsync($"album_mediaItems_{a.id}.json", () => _googlePhotosSvc.GetMediaItemsByAlbumAsync(a.id).ToListAsync());
+            //TODO: revert to use caching line above here!
+            var mediaItemsA = await _googlePhotosSvc.GetMediaItemsByAlbumAsync(a.id).ToListAsync();
+
             //todo: we probably need a dictionary check here also... as you never know with this API!
             var d = new Dictionary<string, MediaItem>();
             var ids = mediaItemsA.Select(p => p.id).ToList();
@@ -347,8 +352,9 @@ internal abstract class CommandBase
         {
             //_console.WriteLine();
             //_console.Write(category);
-            var mis = await _diskCacheSvc.GetAsync($"mediaItems_{category}.json",
-                () => _googlePhotosSvc.GetMediaItemsByCategoryAsync(category));
+            //var mis = await _diskCacheSvc.GetAsync($"mediaItems_{category}.json", () => _googlePhotosSvc.GetMediaItemsByCategoryAsync(category));
+            //TODO: revert to use caching line above here!
+            var mis = await _googlePhotosSvc.GetMediaItemsByCategoryAsync(category).ToListAsync();
             //_console.WriteLine($"\t{mis.Count}");
 
             var d = new Dictionary<string, MediaItem>();
