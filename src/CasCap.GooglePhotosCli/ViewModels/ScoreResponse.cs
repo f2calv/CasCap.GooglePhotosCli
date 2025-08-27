@@ -1,5 +1,4 @@
-﻿using System.Collections.Concurrent;
-namespace CasCap.ViewModels;
+﻿namespace CasCap.ViewModels;
 
 public class ScoreResponse
 {

@@ -1,12 +1,9 @@
 ﻿using BetterConsoleTables;
-using CasCap.Common.Extensions;
-using CasCap.Models;
-using CasCap.Services;
-using McMaster.Extensions.CommandLineUtils;
 using MimeTypes;
 using ShellProgressBar;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+
 namespace CasCap.Commands;
 
 [Command(Description = "Upload media items to Google Photos account.")]
@@ -40,8 +37,7 @@ internal class Upload : CommandBase
     public bool AutoConfirm { get; }
 
     //create album if not found?
-
-    void _googlePhotosSvc_UploadProgressEvent(object sender, UploadProgressArgs e)
+    void _googlePhotosSvc_UploadProgressEvent(object sender, UploadProgressEventArgs e)
     {
         var str = $"{e.fileName} : {(int)e.uploadedBytes.GetSizeInKB()} of {(int)e.totalBytes.GetSizeInKB()} Kb";
         Debug.WriteLine(str);

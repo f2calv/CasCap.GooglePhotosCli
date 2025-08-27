@@ -1,0 +1,10 @@
+﻿global using CasCap.Commands;
+global using CasCap.Common.Extensions;
+global using CasCap.Models;
+global using CasCap.Services;
+global using CasCap.ViewModels;
+global using McMaster.Extensions.CommandLineUtils;
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.Hosting;
+global using System.Collections.Concurrent;
+global using System.Reflection;

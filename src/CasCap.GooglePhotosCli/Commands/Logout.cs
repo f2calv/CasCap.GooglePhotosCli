@@ -1,6 +1,4 @@
-﻿using CasCap.Services;
-using McMaster.Extensions.CommandLineUtils;
-namespace CasCap.Commands;
+﻿namespace CasCap.Commands;
 
 [Command(Description = "Sign-out and delete all local data.")]
 internal class Logout : CommandBase

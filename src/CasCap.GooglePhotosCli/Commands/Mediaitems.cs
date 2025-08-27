@@ -1,7 +1,5 @@
 ﻿using BetterConsoleTables;
-using CasCap.Common.Extensions;
-using CasCap.Services;
-using McMaster.Extensions.CommandLineUtils;
+
 namespace CasCap.Commands;
 
 [Command("mediaitems", Description = "Manage your media items i.e. photos & videos")]
