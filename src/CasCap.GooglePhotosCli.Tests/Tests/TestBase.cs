@@ -1,9 +1,4 @@
-﻿using CasCap.Services;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Xunit.Abstractions;
-namespace CasCap.GooglePhotosCli.Tests;
+﻿namespace CasCap.GooglePhotosCli.Tests;
 
 public abstract class TestBase
 {

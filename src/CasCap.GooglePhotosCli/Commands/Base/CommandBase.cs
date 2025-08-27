@@ -1,45 +1,47 @@
 ﻿using BetterConsoleTables;
-using CasCap.Common.Extensions;
-using CasCap.Models;
-using CasCap.Services;
-using CasCap.ViewModels;
-using McMaster.Extensions.CommandLineUtils;
+using CasCap.Abstractions;
 using ShellProgressBar;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+
 namespace CasCap.Commands;
 
 [HelpOption("--help")]
 internal abstract class CommandBase
 {
-    readonly string[] skipFileNames = new[] { "color_pop.jpg", "effects.jpg" };
+    private readonly string[] skipFileNames = ["color_pop.jpg", "effects.jpg"];
     //string[] skipFileNames = new string[] { };
 
     protected string duplicateFolder = null;
 
-    List<MediaItem> allMediaItems { get; set; } = new();//todo: make this a private and always use the dictionary values instead
+    private List<MediaItem> allMediaItems { get; set; } = new();//todo: make this a private and always use the dictionary values instead
     protected Dictionary<string, MediaItem> dMediaItems { get; set; } = new();//this is the primary reference to mediaItem
 
     protected List<Album> allAlbums { get; set; }
-    Dictionary<string, Album> dAlbums { get; set; } = new();
+    private Dictionary<string, Album> dAlbums { get; set; } = new();
 
-    Dictionary<string, Dictionary<string, MediaItem>> dMediaItemsByAlbum { get; set; } = new();//reference to main MediaItem
-    Dictionary<GooglePhotosContentCategoryType, Dictionary<string, MediaItem>> dMediaItemsByCategory = new();//reference to main MediaItem
+    private Dictionary<string, Dictionary<string, MediaItem>> dMediaItemsByAlbum { get; set; } = new();//reference to main MediaItem
+    private Dictionary<GooglePhotosContentCategoryType, Dictionary<string, MediaItem>> dMediaItemsByCategory = new();//reference to main MediaItem
 
     protected ProgressBar pbar;
     protected ChildProgressBar childPBar;
 
     protected readonly IConsole _console;
-    protected readonly DiskCacheService _diskCacheSvc;
+    protected readonly IDistributedCache _distributedCache;
     protected readonly GooglePhotosService _googlePhotosSvc;
 
-    public CommandBase(IConsole console, DiskCacheService diskCacheSvc, GooglePhotosService googlePhotosSvc)
+    private readonly string _optionsFilePath;
+    private readonly string _configFilePath;
+
+    protected CommandBase(IConsole console, IDistributedCache distributedCache, GooglePhotosService googlePhotosSvc)
     {
         _console = console;
-        _diskCacheSvc = diskCacheSvc;
-        _diskCacheSvc.CacheRoot = _fileDataStoreFullPathOverride;
+        _distributedCache = distributedCache;
         _googlePhotosSvc = googlePhotosSvc;
         _googlePhotosSvc.PagingEvent += GooglePhotosSvc_PagingEvent;
+
+        _optionsFilePath = Path.Combine(_distributedCache.DiskCacheFolder, $"{nameof(GooglePhotosOptions)}.json");
+        _configFilePath = Path.Combine(_distributedCache.DiskCacheFolder, $"{nameof(AppConfig)}.json");
     }
 
     public virtual void GooglePhotosSvc_PagingEvent(object sender, PagingEventArgs e)
@@ -57,13 +59,13 @@ internal abstract class CommandBase
         return 0;
     }
 
-    async Task FastLogin()
+    private async Task FastLogin()
     {
         var hasLoggedInBefore = File.Exists(_optionsFilePath);
         if (hasLoggedInBefore)
         {
-            var str = File.ReadAllText(_optionsFilePath);
-            _options = str.FromJSON<GooglePhotosOptions>();
+            var str = await File.ReadAllTextAsync(_optionsFilePath);
+            _options = str.FromJson<GooglePhotosOptions>();
         }
 
         if (!hasLoggedInBefore || !await _googlePhotosSvc.LoginAsync(_options))
@@ -79,7 +81,7 @@ internal abstract class CommandBase
             Directory.CreateDirectory(_userPath);
             _console.WriteLine($"creating user folder {_userPath}");
         }
-        _diskCacheSvc.CacheRoot = _userPath;
+        _distributedCache.DiskCacheFolder = _userPath;
     }
 
     async Task Login()
@@ -109,23 +111,23 @@ internal abstract class CommandBase
 
                 //todo: create this extension in mcmasterlib - PromptGetStringArray() ?
                 //options.Scopes = new[] { GooglePhotosScope.ReadOnly };
-                Scopes = new[] { GooglePhotosScope.Access, GooglePhotosScope.Sharing },
-                FileDataStoreFullPathOverride = _fileDataStoreFullPathOverride
+                Scopes = [GooglePhotosScope.Access, GooglePhotosScope.Sharing],
+                FileDataStoreFullPathOverride = _distributedCache.DiskCacheFolder
             };
 
             saveDetails = Prompt.GetYesNo("Persist these log-in details for next time?", false, _promptColor, _promptBgColor);
         }
         else
         {
-            var str = File.ReadAllText(_optionsFilePath);
-            _options = str.FromJSON<GooglePhotosOptions>();
+            var str = await File.ReadAllTextAsync(_optionsFilePath);
+            _options = str.FromJson<GooglePhotosOptions>();
         }
 
         var success = await _googlePhotosSvc.LoginAsync(_options);
         if (success)
         {
             if (!hasLoggedInBefore && saveDetails)
-                File.WriteAllText(_optionsFilePath, _options.ToJSON());
+                await File.WriteAllTextAsync(_optionsFilePath, _options.ToJson());
             _console.WriteLine("now logged in!! :)");
         }
         else
@@ -170,11 +172,6 @@ internal abstract class CommandBase
     protected ConsoleColor _promptColor = ConsoleColor.White;
     protected ConsoleColor _promptBgColor = ConsoleColor.DarkGreen;
 
-    protected static string _fileDataStoreFullPathOverride => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AppDomain.CurrentDomain.FriendlyName);
-
-    protected static string _optionsFilePath => Path.Combine(_fileDataStoreFullPathOverride, $"{nameof(GooglePhotosOptions)}.json");
-    protected static string _configFilePath => Path.Combine(_fileDataStoreFullPathOverride, $"{nameof(AppConfig)}.json");
-
     protected GooglePhotosOptions _options;
     protected AppConfig _config { get; set; }
 
@@ -190,11 +187,11 @@ internal abstract class CommandBase
         else
         {
             var str = await File.ReadAllTextAsync(_configFilePath);
-            _config = str.FromJSON<AppConfig>();
+            _config = str.FromJson<AppConfig>();
         }
     }
 
-    protected Task WriteConfig() => File.WriteAllTextAsync(_configFilePath, _config.ToJSON());
+    protected Task WriteConfig() => File.WriteAllTextAsync(_configFilePath, _config.ToJson());
 
     protected async Task<bool> SyncMediaItems()
     {
@@ -230,7 +227,7 @@ internal abstract class CommandBase
                 }
                 allMediaItems.RemoveAll(p => duplicateMediaItemIds.Contains(p.id));
                 allMediaItems.AddRange(records);
-                File.WriteAllText(Path.Combine(_diskCacheSvc.CacheRoot, "mediaItems.json"), allMediaItems.ToJSON());
+                await _distributedCache.Set("mediaItems", allMediaItems);
             }
             else
             {
@@ -270,7 +267,7 @@ internal abstract class CommandBase
                     }
                 }
                 if (counter > 0)
-                    File.WriteAllText(Path.Combine(_diskCacheSvc.CacheRoot, "mediaItems.json"), allMediaItems.ToJSON());
+                    await _distributedCache.Set("mediaItems", allMediaItems);
                 _console.WriteLine($"added {counter} new mediaItems to local cache");
             }
         }
@@ -282,12 +279,11 @@ internal abstract class CommandBase
 
     protected async Task<bool> SyncAlbums()
     {
-        allAlbums = await _diskCacheSvc.GetAsync($"albums.json", () => _googlePhotosSvc.GetAlbumsAsync());
+        allAlbums = await _distributedCache.Get("albums", () => _googlePhotosSvc.GetAlbumsAsync());
         foreach (var a in allAlbums)
         {
             //_console.Write(album.title);
-            var album = await _diskCacheSvc.GetAsync($"album_{a.id}.json",
-                () => _googlePhotosSvc.GetAlbumAsync(a.id));
+            var album = await _distributedCache.Get($"album_{a.id}", () => _googlePhotosSvc.GetAlbumAsync(a.id));
             //_console.WriteLine($"\t{alb.mediaItemsCount}");
 
             //var mediaItemsA = await _diskCacheSvc.GetAsync($"album_mediaItems_{a.id}.json", () => _googlePhotosSvc.GetMediaItemsByAlbumAsync(a.id).ToListAsync());
@@ -329,7 +325,7 @@ internal abstract class CommandBase
                 else
                 {
                     //todo: re-save cache
-                    File.WriteAllText(Path.Combine(_diskCacheSvc.CacheRoot, "mediaItems.json"), allMediaItems.ToJSON());
+                    await _distributedCache.Set("mediaItems", allMediaItems);
                     dMediaItems = allMediaItems.ToDictionary(k => k.id, v => v);
                 }
             }

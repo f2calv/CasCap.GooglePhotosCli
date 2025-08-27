@@ -1,9 +1,7 @@
-﻿using CasCap.Common.Extensions;
-using CasCap.Models;
-using CasCap.Services;
-using McMaster.Extensions.CommandLineUtils;
+﻿using CasCap.Abstractions;
 using ShellProgressBar;
 using System.ComponentModel.DataAnnotations;
+
 namespace CasCap.Commands;
 
 [Command(Description = "Manage your media library albums.")]
@@ -13,7 +11,8 @@ namespace CasCap.Commands;
 [Subcommand(typeof(Download))]
 internal class Albums : CommandBase
 {
-    public Albums(IConsole console, DiskCacheService diskCacheSvc, GooglePhotosService googlePhotosSvc) : base(console, diskCacheSvc, googlePhotosSvc) { }
+    public Albums(IConsole console, ILocalCache diskCacheSvc, GooglePhotosService googlePhotosSvc)
+        : base(console, diskCacheSvc, googlePhotosSvc) { }
 
     public async override Task<int> OnExecuteAsync(CommandLineApplication app)
     {
@@ -27,7 +26,8 @@ internal class Albums : CommandBase
     [Command(Description = "List existing album details.")]
     class List : CommandBase
     {
-        public List(IConsole console, DiskCacheService diskCacheSvc, GooglePhotosService googlePhotosSvc) : base(console, diskCacheSvc, googlePhotosSvc) { }
+        public List(IConsole console, DiskCacheService diskCacheSvc, GooglePhotosService googlePhotosSvc)
+            : base(console, diskCacheSvc, googlePhotosSvc) { }
 
         [Option("--duplicates", Description = "Show only duplicate albums by title.")]
         public bool duplicatesOnly { get; }
@@ -61,7 +61,8 @@ internal class Albums : CommandBase
     [Command(Description = "Add new album.")]
     class Add : CommandBase
     {
-        public Add(IConsole console, DiskCacheService diskCacheSvc, GooglePhotosService googlePhotosSvc) : base(console, diskCacheSvc, googlePhotosSvc) { }
+        public Add(IConsole console, DiskCacheService diskCacheSvc, GooglePhotosService googlePhotosSvc)
+            : base(console, diskCacheSvc, googlePhotosSvc) { }
 
         [Required]
         [Option("-t|--title", Description = "Album title")]
@@ -85,7 +86,8 @@ internal class Albums : CommandBase
     [Command(Description = "Refresh local album cache.")]
     class Sync : CommandBase
     {
-        public Sync(IConsole console, DiskCacheService diskCacheSvc, GooglePhotosService googlePhotosSvc) : base(console, diskCacheSvc, googlePhotosSvc) { }
+        public Sync(IConsole console, DiskCacheService diskCacheSvc, GooglePhotosService googlePhotosSvc)
+            : base(console, diskCacheSvc, googlePhotosSvc) { }
 
         public async override Task<int> OnExecuteAsync(CommandLineApplication app)
         {
@@ -101,7 +103,8 @@ internal class Albums : CommandBase
     [Command(Description = "Download album media items.")]
     class Download : CommandBase
     {
-        public Download(IConsole console, DiskCacheService diskCacheSvc, GooglePhotosService googlePhotosSvc) : base(console, diskCacheSvc, googlePhotosSvc) { }
+        public Download(IConsole console, DiskCacheService diskCacheSvc, GooglePhotosService googlePhotosSvc)
+            : base(console, diskCacheSvc, googlePhotosSvc) { }
 
         [Required]
         [Option("-t|--title", Description = "Album title")]

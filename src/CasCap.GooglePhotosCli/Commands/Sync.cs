@@ -1,6 +1,4 @@
-﻿using CasCap.Services;
-using McMaster.Extensions.CommandLineUtils;
-namespace CasCap.Commands;
+﻿namespace CasCap.Commands;
 
 [Command(Description = "Synchronise media item and album data from remote to local.")]
 internal class Sync : CommandBase

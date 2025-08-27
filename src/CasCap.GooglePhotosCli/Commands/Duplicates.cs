@@ -1,11 +1,7 @@
-﻿using CasCap.Common.Extensions;
-using CasCap.Models;
-using CasCap.Services;
-using CasCap.ViewModels;
-using McMaster.Extensions.CommandLineUtils;
-using ShellProgressBar;
+﻿using ShellProgressBar;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Metadata.Profiles.Exif;
+
 namespace CasCap.Commands;
 
 [Command(Description = "Analyse and identify potential duplicate media items in a Google Photos account.")]
@@ -28,7 +24,7 @@ internal class Duplicates : CommandBase
         if (!await SyncAlbums()) return 1;
         if (!await SyncMediaItemsByCategory()) return 1;
 
-        var res = await _diskCacheSvc.GetAsync($"{nameof(ScoreResponse)}_{type}.json", () => GetScoreResponse());
+        var res = await _distributedCache.GetAsync($"{nameof(ScoreResponse)}_{type}.json", () => GetScoreResponse());
 
         duplicateFolder = Path.Combine(_userPath, "duplicates");
         if (!Directory.Exists(duplicateFolder))
