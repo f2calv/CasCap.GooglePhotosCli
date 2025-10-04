@@ -344,7 +344,7 @@ internal abstract class CommandBase
     /// <returns></returns>
     protected async Task<bool> SyncMediaItemsByCategory()
     {
-        foreach (var category in Utils.GetAllItems<GooglePhotosContentCategoryType>())
+        foreach (var category in EnumExtensions.GetAllItems<GooglePhotosContentCategoryType>())
         {
             //_console.WriteLine();
             //_console.Write(category);
