@@ -223,7 +223,7 @@ internal abstract class CommandBase
                     if (record != null)
                         records.Add(record);
                     else
-                        throw new Exception($"Cannot find duplicate mediaItem id {id}");
+                        throw new GenericException($"Cannot find duplicate mediaItem id {id}");
                 }
                 allMediaItems.RemoveAll(p => duplicateMediaItemIds.Contains(p.id));
                 allMediaItems.AddRange(records);
@@ -311,7 +311,7 @@ internal abstract class CommandBase
                             if (dMediaItems.TryAdd(id, obj))//hmmm do we re-save the main mediaItems cache now?
                                 allMediaItems.Add(obj);
                             else
-                                throw new Exception("should never get hit");
+                                throw new GenericException("should never get hit");
                             mi = obj;
                             d.TryAdd(id, GetMI(id));
                             foundInLookup.Add(mi);
@@ -428,7 +428,7 @@ internal abstract class CommandBase
             if (dFlattened.TryAdd(o.id, o))
                 lFlattened.Add(o);
             else
-                throw new Exception($"should never get hit?");
+                throw new GenericException($"should never get hit?");
         }
         return lFlattened;
     }
@@ -442,7 +442,7 @@ internal abstract class CommandBase
             Debug.WriteLine($"{nameof(GetMI)} media item not found, caller={caller}");
             return null;
         }
-        //throw new Exception($"possible sync issue? cannot find mi id {id}");
+        //throw new GenericException($"possible sync issue? cannot find mi id {id}");
     }
 
     protected static string GetRelPath(string rootPath, FileInfo fileInfo) => fileInfo.FullName.Replace(rootPath, string.Empty);
@@ -471,13 +471,13 @@ internal abstract class CommandBase
                 }
                 catch (NotSupportedException e)
                 {
-                    throw new Exception($"Unable to access folder: {e.Message}");
+                    throw new GenericException($"Unable to access folder: {e.Message}");
                 }
             }
         }
         catch (UnauthorizedAccessException e)
         {
-            throw new Exception($"Unable to access folder: {e.Message}");
+            throw new GenericException($"Unable to access folder: {e.Message}");
         }
         return l;
     }
