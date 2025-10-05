@@ -7,7 +7,7 @@ public abstract class TestBase
     protected GooglePhotosService _googlePhotosSvc;
     protected DiskCacheService _diskCacheSvc;
 
-    public TestBase(ITestOutputHelper output)
+    protected TestBase(ITestOutputHelper output)
     {
         var configuration = new ConfigurationBuilder()
             .AddJsonFile($"appsettings.Test.json", optional: false, reloadOnChange: true)
