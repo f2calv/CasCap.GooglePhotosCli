@@ -1,4 +1,5 @@
 ﻿global using CasCap.Commands;
+global using CasCap.Common.Exceptions;
 global using CasCap.Common.Extensions;
 global using CasCap.Models;
 global using CasCap.Services;

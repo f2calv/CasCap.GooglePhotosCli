@@ -67,7 +67,7 @@ internal class Duplicates : CommandBase
                 _console.WriteLine(str);
             }
             else
-                throw new Exception("should never get hit...?");
+                throw new GenericException("should never get hit...?");
 
             //get latest versions (i.e. with valid product urls)
             var mediaItems = await _googlePhotosSvc.GetMediaItemsByIdsAsync(ids).ToListAsync();

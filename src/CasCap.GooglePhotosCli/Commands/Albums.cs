@@ -196,7 +196,7 @@ internal class Albums : CommandBase
             foreach (var item in items)//in what file order do we download big albums?
             {
                 if (item.mediaItem.syncDate < DateTime.UtcNow.AddHours(-1))
-                    throw new Exception($"mediaitem has expired, refresh the item...");//todo: handle this better
+                    throw new GenericException($"mediaitem has expired, refresh the item...");//todo: handle this better
 
                 //todo: add child progress bar and HttpClient download progress meter https://github.com/dotnet/runtime/issues/16681
                 var bytes = await _googlePhotosSvc.DownloadBytes(item.mediaItem, maxWidth, maxHeight, crop, exif);

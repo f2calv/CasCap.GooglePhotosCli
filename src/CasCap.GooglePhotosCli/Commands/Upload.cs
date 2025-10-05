@@ -127,7 +127,7 @@ internal class Upload : CommandBase
         //note: if we are uploading a crazy amount of data ProgressBar only supports int for ticks, so may break :/
         var totalBytes = items.Sum(p => p.fileInfo.Length);
         if (totalBytes > int.MaxValue)
-            throw new Exception($"Unable to upload more than {((long)int.MaxValue).GetSizeInMB()} in one session!");
+            throw new GenericException($"Unable to upload more than {((long)int.MaxValue).GetSizeInMB()} in one session!");
 
         var totalKBytes = totalBytes.GetSizeInKB();
 
@@ -201,7 +201,7 @@ internal class Upload : CommandBase
             {
                 var item = items.FirstOrDefault(p => p.uploadToken == newMediaItem.uploadToken);
                 if (item is null)
-                    throw new Exception("could this happen?");
+                    throw new GenericException("could this happen?");
                 if (newMediaItem.status is object && newMediaItem.status.message == "Success")
                     item.mediaItem = newMediaItem.mediaItem;
                 else
