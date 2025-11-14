@@ -2,6 +2,7 @@
 global using CasCap.Common.Exceptions;
 global using CasCap.Common.Extensions;
 global using CasCap.Models;
+global using CasCap.Common.Services;
 global using CasCap.Services;
 global using CasCap.ViewModels;
 global using McMaster.Extensions.CommandLineUtils;

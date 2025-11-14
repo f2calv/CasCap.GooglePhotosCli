@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <RootNamespace>CasCap</RootNamespace>
-    <LangVersion>13.0</LangVersion>
+    <LangVersion>14.0</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <!--nullable we enable on a per project basis-->
     <!--<Nullable>enable</Nullable>-->

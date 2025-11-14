@@ -151,7 +151,7 @@ internal class Duplicates : CommandBase
         //todo: for speed analyse flattened to see if Count(DISTINCT mimeType) > 1 - if mimeType only ever null OR jpg, then don't include in combinations (repeat for all other fields)
         //todo: split photos and video duplication check
 
-        var lGroupByCombinations = Utils.GetAllCombinations<GroupByProperty>().ToList();
+        var lGroupByCombinations = EnumExtensions.GetAllCombinations<GroupByProperty>().ToList();
 
         if (type == MediaType.Photo)
         {
