@@ -29,6 +29,7 @@ on:
 
 jobs:
   ci:
+    permissions: {}
     uses: f2calv/gha-workflows/.github/workflows/dotnet-publish-nuget.yml@v1
     with:
       BuildConfiguration: ${{ github.event.inputs.BuildConfiguration }}
