@@ -1,18 +1,15 @@
 ﻿using BetterConsoleTables;
-using CasCap.Common.Extensions;
-using CasCap.Models;
-using CasCap.Services;
-using McMaster.Extensions.CommandLineUtils;
 using MimeTypes;
 using ShellProgressBar;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+
 namespace CasCap.Commands;
 
 [Command(Description = "Upload media items to Google Photos account.")]
 internal class Upload : CommandBase
 {
-    public Upload(IConsole console, DiskCacheService diskCacheSvc, GooglePhotosService googlePhotosSvc) : base(console, diskCacheSvc, googlePhotosSvc)
+    public Upload(IConsole console, ILocalCache localCache, IOptions<CachingOptions> cachingOptions, GooglePhotosService googlePhotosSvc) : base(console, localCache, cachingOptions, googlePhotosSvc)
     {
         _googlePhotosSvc.UploadProgressEvent += _googlePhotosSvc_UploadProgressEvent;
     }
@@ -40,8 +37,7 @@ internal class Upload : CommandBase
     public bool AutoConfirm { get; }
 
     //create album if not found?
-
-    void _googlePhotosSvc_UploadProgressEvent(object sender, UploadProgressArgs e)
+    void _googlePhotosSvc_UploadProgressEvent(object sender, UploadProgressEventArgs e)
     {
         var str = $"{e.fileName} : {(int)e.uploadedBytes.GetSizeInKB()} of {(int)e.totalBytes.GetSizeInKB()} Kb";
         Debug.WriteLine(str);
@@ -131,7 +127,7 @@ internal class Upload : CommandBase
         //note: if we are uploading a crazy amount of data ProgressBar only supports int for ticks, so may break :/
         var totalBytes = items.Sum(p => p.fileInfo.Length);
         if (totalBytes > int.MaxValue)
-            throw new Exception($"Unable to upload more than {((long)int.MaxValue).GetSizeInMB()} in one session!");
+            throw new GenericException($"Unable to upload more than {((long)int.MaxValue).GetSizeInMB()} in one session!");
 
         var totalKBytes = totalBytes.GetSizeInKB();
 
@@ -205,7 +201,7 @@ internal class Upload : CommandBase
             {
                 var item = items.FirstOrDefault(p => p.uploadToken == newMediaItem.uploadToken);
                 if (item is null)
-                    throw new Exception("could this happen?");
+                    throw new GenericException("could this happen?");
                 if (newMediaItem.status is object && newMediaItem.status.message == "Success")
                     item.mediaItem = newMediaItem.mediaItem;
                 else

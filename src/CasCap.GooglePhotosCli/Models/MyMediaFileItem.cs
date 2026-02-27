@@ -1,5 +1,4 @@
-﻿using System.IO;
-namespace CasCap.Models;
+﻿namespace CasCap.Models;
 
 public class MyMediaFileItem
 {

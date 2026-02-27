@@ -1,5 +1,4 @@
-﻿using CasCap.Models;
-namespace CasCap.ViewModels;
+﻿namespace CasCap.ViewModels;
 
 public class flattened
 {

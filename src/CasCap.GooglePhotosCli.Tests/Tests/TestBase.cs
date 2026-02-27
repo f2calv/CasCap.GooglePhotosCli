@@ -1,18 +1,13 @@
-﻿using CasCap.Services;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Xunit.Abstractions;
-namespace CasCap.GooglePhotosCli.Tests;
+﻿namespace CasCap.GooglePhotosCli.Tests;
 
 public abstract class TestBase
 {
     protected ILogger _logger;
 
     protected GooglePhotosService _googlePhotosSvc;
-    protected DiskCacheService _diskCacheSvc;
+    protected ILocalCache _localCache;
 
-    public TestBase(ITestOutputHelper output)
+    protected TestBase(ITestOutputHelper output)
     {
         var configuration = new ConfigurationBuilder()
             .AddJsonFile($"appsettings.Test.json", optional: false, reloadOnChange: true)
@@ -28,12 +23,12 @@ public abstract class TestBase
         _logger = ApplicationLogging.LoggerFactory.CreateLogger<TestBase>();
 
         //add services
-        services.AddGooglePhotos();
-        services.AddSingleton<DiskCacheService>();
+        services.AddGooglePhotos(configuration);
+        services.AddCasCapCaching(LocalCacheType: CacheType.Disk);
 
         //retrieve services
         var serviceProvider = services.BuildServiceProvider();
         _googlePhotosSvc = serviceProvider.GetRequiredService<GooglePhotosService>();
-        _diskCacheSvc = serviceProvider.GetRequiredService<DiskCacheService>();
+        _localCache = serviceProvider.GetRequiredService<ILocalCache>();
     }
 }

@@ -1,8 +1,5 @@
 ﻿using BetterConsoleTables;
-using CasCap.Common.Extensions;
-using CasCap.Services;
-using McMaster.Extensions.CommandLineUtils;
-using System.Threading.Tasks;
+
 namespace CasCap.Commands;
 
 [Command("mediaitems", Description = "Manage your media items i.e. photos & videos")]
@@ -11,7 +8,7 @@ namespace CasCap.Commands;
 [Subcommand(typeof(Duplicates))]
 internal class MediaItems : CommandBase
 {
-    public MediaItems(IConsole console, DiskCacheService diskCacheSvc, GooglePhotosService googlePhotosSvc) : base(console, diskCacheSvc, googlePhotosSvc) { }
+    public MediaItems(IConsole console, ILocalCache localCache, IOptions<CachingOptions> cachingOptions, GooglePhotosService googlePhotosSvc) : base(console, localCache, cachingOptions, googlePhotosSvc) { }
 
     public async override Task<int> OnExecuteAsync(CommandLineApplication app)
     {
@@ -23,12 +20,12 @@ internal class MediaItems : CommandBase
     [Command(Description = "List media items")]
     class List : CommandBase
     {
-        public List(IConsole console, DiskCacheService diskCacheSvc, GooglePhotosService googlePhotosSvc) : base(console, diskCacheSvc, googlePhotosSvc) { }
+        public List(IConsole console, ILocalCache localCache, IOptions<CachingOptions> cachingOptions, GooglePhotosService googlePhotosSvc) : base(console, localCache, cachingOptions, googlePhotosSvc) { }
 
         public async override Task<int> OnExecuteAsync(CommandLineApplication app)
         {
             await base.OnExecuteAsync(app);
-            var mediaitems = await _googlePhotosSvc.GetMediaItemsAsync();
+            var mediaitems = await _googlePhotosSvc.GetMediaItemsAsync().ToListAsync();
             if (mediaitems.IsNullOrEmpty())
             {
                 _console.WriteLine("Sorry, no media items available...");

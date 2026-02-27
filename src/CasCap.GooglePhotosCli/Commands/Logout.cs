@@ -1,11 +1,9 @@
-﻿using CasCap.Services;
-using McMaster.Extensions.CommandLineUtils;
-namespace CasCap.Commands;
+﻿namespace CasCap.Commands;
 
 [Command(Description = "Sign-out and delete all local data.")]
 internal class Logout : CommandBase
 {
-    public Logout(IConsole console, DiskCacheService diskCacheSvc, GooglePhotosService googlePhotosSvc) : base(console, diskCacheSvc, googlePhotosSvc) { }
+    public Logout(IConsole console, ILocalCache localCache, IOptions<CachingOptions> cachingOptions, GooglePhotosService googlePhotosSvc) : base(console, localCache, cachingOptions, googlePhotosSvc) { }
 
     public async override Task<int> OnExecuteAsync(CommandLineApplication app)
     {

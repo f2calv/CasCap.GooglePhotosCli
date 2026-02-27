@@ -1,23 +1,13 @@
-﻿using CasCap.Common.Extensions;
-using CasCap.Models;
-using CasCap.Services;
-using CasCap.ViewModels;
-using McMaster.Extensions.CommandLineUtils;
-using ShellProgressBar;
+﻿using ShellProgressBar;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Metadata.Profiles.Exif;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+
 namespace CasCap.Commands;
 
 [Command(Description = "Analyse and identify potential duplicate media items in a Google Photos account.")]
 internal class Duplicates : CommandBase
 {
-    public Duplicates(IConsole console, DiskCacheService diskCacheSvc, GooglePhotosService googlePhotosSvc) : base(console, diskCacheSvc, googlePhotosSvc) { }
+    public Duplicates(IConsole console, ILocalCache localCache, IOptions<CachingOptions> cachingOptions, GooglePhotosService googlePhotosSvc) : base(console, localCache, cachingOptions, googlePhotosSvc) { }
 
     [Argument(0, Description = "Which media type do you wish to analyse?")]
     public MediaType type { get; }
@@ -34,7 +24,9 @@ internal class Duplicates : CommandBase
         if (!await SyncAlbums()) return 1;
         if (!await SyncMediaItemsByCategory()) return 1;
 
-        var res = await _diskCacheSvc.GetAsync($"{nameof(ScoreResponse)}_{type}.json", () => GetScoreResponse());
+        var cacheKey = $"{nameof(ScoreResponse)}_{type}.json";
+        var res = _localCache.Get<ScoreResponse>(cacheKey) ?? await GetScoreResponse();
+        _localCache.Set(cacheKey, res);
 
         duplicateFolder = Path.Combine(_userPath, "duplicates");
         if (!Directory.Exists(duplicateFolder))
@@ -77,10 +69,10 @@ internal class Duplicates : CommandBase
                 _console.WriteLine(str);
             }
             else
-                throw new Exception("should never get hit...?");
+                throw new GenericException("should never get hit...?");
 
             //get latest versions (i.e. with valid product urls)
-            var mediaItems = await _googlePhotosSvc.GetMediaItemsByIdsAsync(ids);
+            var mediaItems = await _googlePhotosSvc.GetMediaItemsByIdsAsync(ids).ToListAsync();
             await AnalyseExifs(mediaItems);
 
 
@@ -161,7 +153,7 @@ internal class Duplicates : CommandBase
         //todo: for speed analyse flattened to see if Count(DISTINCT mimeType) > 1 - if mimeType only ever null OR jpg, then don't include in combinations (repeat for all other fields)
         //todo: split photos and video duplication check
 
-        var lGroupByCombinations = Utils.GetAllCombinations<GroupByProperty>().ToList();
+        var lGroupByCombinations = EnumExtensions.GetAllCombinations<GroupByProperty>().ToList();
 
         if (type == MediaType.Photo)
         {
@@ -356,7 +348,7 @@ internal class Duplicates : CommandBase
             if (!File.Exists(filePath))
             {
                 _console.Write($"{j})\tdownloading {mediaItem.id} ...");
-                var bytes = await _googlePhotosSvc.DownloadBytes(mediaItem, download: true);
+                var bytes = await _googlePhotosSvc.DownloadBytes(mediaItem);
                 await File.WriteAllBytesAsync(filePath, bytes);
                 _console.WriteLine($"downloaded {((long)bytes.Length).GetSizeInMB()}MB");//todo: need a KB extension method here?
             }

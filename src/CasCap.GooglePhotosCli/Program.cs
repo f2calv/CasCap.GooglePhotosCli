@@ -1,10 +1,4 @@
-﻿using CasCap.Commands;
-using CasCap.Services;
-using McMaster.Extensions.CommandLineUtils;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using System.Reflection;
-namespace CasCap;
+﻿namespace CasCap;
 
 [Command(Name = "googlephotos", Description = "*Unofficial* Google Photos CLI", ExtendedHelpText = @"
 Remarks:
@@ -16,18 +10,26 @@ Remarks:
 [Subcommand(typeof(Sync))]
 class Program
 {
-    static async Task<int> Main(string[] args)
+    private static async Task<int> Main(string[] args)
     {
         var host = new HostBuilder()
             .ConfigureLogging((context, builder) =>
             {
-                    //builder.AddConsole();
-                })
+                //builder.AddConsole();
+            })
             .ConfigureServices((context, services) =>
             {
-                services.AddSingleton<DiskCacheService>();
+                services.AddCasCapCaching(new CachingOptions
+                {
+                    DiskCache = new CacheOptions
+                    {
+                        SerializationType = SerializationType.Json,
+                        IsEnabled = true,
+                    },
+                    DiskCacheFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AppDomain.CurrentDomain.FriendlyName),
+                }, LocalCacheType: CacheType.Disk);
                 services.AddSingleton(PhysicalConsole.Singleton);
-                services.AddGooglePhotos();
+                services.AddGooglePhotos(context.Configuration);
             });
         var result = 0;
         try
@@ -48,8 +50,8 @@ class Program
         return result;
     }
 
-    readonly IConsole _console;
-    readonly GooglePhotosService _googlePhotosSvc;
+    private readonly IConsole _console;
+    private readonly GooglePhotosService _googlePhotosSvc;
 
     public Program(IConsole console, GooglePhotosService googlePhotosSvc)
     {
@@ -57,13 +59,13 @@ class Program
         _googlePhotosSvc = googlePhotosSvc;
     }
 
-    int OnExecute(CommandLineApplication app, IConsole console, CancellationToken cancellationToken = default)
+    private int OnExecute(CommandLineApplication app, IConsole console, CancellationToken cancellationToken = default)
     {
         console.WriteLine("You must specify a subcommand.");
         app.ShowHelp();
         return 1;
     }
 
-    static string GetVersion()
+    private static string GetVersion()
         => typeof(Program).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
 }

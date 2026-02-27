@@ -1,9 +1,7 @@
-﻿using CasCap.Common.Extensions;
-using CasCap.Models;
-using CasCap.Services;
-using McMaster.Extensions.CommandLineUtils;
+﻿using CasCap.Abstractions;
 using ShellProgressBar;
 using System.ComponentModel.DataAnnotations;
+
 namespace CasCap.Commands;
 
 [Command(Description = "Manage your media library albums.")]
@@ -13,7 +11,8 @@ namespace CasCap.Commands;
 [Subcommand(typeof(Download))]
 internal class Albums : CommandBase
 {
-    public Albums(IConsole console, DiskCacheService diskCacheSvc, GooglePhotosService googlePhotosSvc) : base(console, diskCacheSvc, googlePhotosSvc) { }
+    public Albums(IConsole console, ILocalCache localCache, IOptions<CachingOptions> cachingOptions, GooglePhotosService googlePhotosSvc)
+        : base(console, localCache, cachingOptions, googlePhotosSvc) { }
 
     public async override Task<int> OnExecuteAsync(CommandLineApplication app)
     {
@@ -27,7 +26,8 @@ internal class Albums : CommandBase
     [Command(Description = "List existing album details.")]
     class List : CommandBase
     {
-        public List(IConsole console, DiskCacheService diskCacheSvc, GooglePhotosService googlePhotosSvc) : base(console, diskCacheSvc, googlePhotosSvc) { }
+        public List(IConsole console, ILocalCache localCache, IOptions<CachingOptions> cachingOptions, GooglePhotosService googlePhotosSvc)
+            : base(console, localCache, cachingOptions, googlePhotosSvc) { }
 
         [Option("--duplicates", Description = "Show only duplicate albums by title.")]
         public bool duplicatesOnly { get; }
@@ -61,7 +61,8 @@ internal class Albums : CommandBase
     [Command(Description = "Add new album.")]
     class Add : CommandBase
     {
-        public Add(IConsole console, DiskCacheService diskCacheSvc, GooglePhotosService googlePhotosSvc) : base(console, diskCacheSvc, googlePhotosSvc) { }
+        public Add(IConsole console, ILocalCache localCache, IOptions<CachingOptions> cachingOptions, GooglePhotosService googlePhotosSvc)
+            : base(console, localCache, cachingOptions, googlePhotosSvc) { }
 
         [Required]
         [Option("-t|--title", Description = "Album title")]
@@ -85,7 +86,8 @@ internal class Albums : CommandBase
     [Command(Description = "Refresh local album cache.")]
     class Sync : CommandBase
     {
-        public Sync(IConsole console, DiskCacheService diskCacheSvc, GooglePhotosService googlePhotosSvc) : base(console, diskCacheSvc, googlePhotosSvc) { }
+        public Sync(IConsole console, ILocalCache localCache, IOptions<CachingOptions> cachingOptions, GooglePhotosService googlePhotosSvc)
+            : base(console, localCache, cachingOptions, googlePhotosSvc) { }
 
         public async override Task<int> OnExecuteAsync(CommandLineApplication app)
         {
@@ -101,7 +103,8 @@ internal class Albums : CommandBase
     [Command(Description = "Download album media items.")]
     class Download : CommandBase
     {
-        public Download(IConsole console, DiskCacheService diskCacheSvc, GooglePhotosService googlePhotosSvc) : base(console, diskCacheSvc, googlePhotosSvc) { }
+        public Download(IConsole console, ILocalCache localCache, IOptions<CachingOptions> cachingOptions, GooglePhotosService googlePhotosSvc)
+            : base(console, localCache, cachingOptions, googlePhotosSvc) { }
 
         [Required]
         [Option("-t|--title", Description = "Album title")]
@@ -148,7 +151,7 @@ internal class Albums : CommandBase
                 _console.WriteLine($"Album with title '{title}' not found!");
                 return 0;
             }
-            var mediaItems = await _googlePhotosSvc.GetMediaItemsByAlbumAsync(album.id);
+            var mediaItems = await _googlePhotosSvc.GetMediaItemsByAlbumAsync(album.id).ToListAsync();
             if (mediaItems.IsNullOrEmpty())
             {
                 _console.WriteLine($"Album with title '{title}' exists, but contains no media items!");
@@ -193,7 +196,7 @@ internal class Albums : CommandBase
             foreach (var item in items)//in what file order do we download big albums?
             {
                 if (item.mediaItem.syncDate < DateTime.UtcNow.AddHours(-1))
-                    throw new Exception($"mediaitem has expired, refresh the item...");//todo: handle this better
+                    throw new GenericException($"mediaitem has expired, refresh the item...");//todo: handle this better
 
                 //todo: add child progress bar and HttpClient download progress meter https://github.com/dotnet/runtime/issues/16681
                 var bytes = await _googlePhotosSvc.DownloadBytes(item.mediaItem, maxWidth, maxHeight, crop, exif);
