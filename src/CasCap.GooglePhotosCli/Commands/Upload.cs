@@ -9,7 +9,7 @@ namespace CasCap.Commands;
 [Command(Description = "Upload media items to Google Photos account.")]
 internal class Upload : CommandBase
 {
-    public Upload(IConsole console, ILocalCache localCache, IOptions<CachingOptions> cachingOptions, GooglePhotosService googlePhotosSvc) : base(console, localCache, cachingOptions, googlePhotosSvc)
+    public Upload(IConsole console, ILocalCache localCache, IOptions<CachingConfig> cachingConfig, GooglePhotosService googlePhotosSvc) : base(console, localCache, cachingConfig, googlePhotosSvc)
     {
         _googlePhotosSvc.UploadProgressEvent += _googlePhotosSvc_UploadProgressEvent;
     }

@@ -3,7 +3,8 @@
 [Command(Description = "Sign-out and delete all local data.")]
 internal class Logout : CommandBase
 {
-    public Logout(IConsole console, ILocalCache localCache, IOptions<CachingOptions> cachingOptions, GooglePhotosService googlePhotosSvc) : base(console, localCache, cachingOptions, googlePhotosSvc) { }
+    public Logout(IConsole console, ILocalCache localCache, IOptions<CachingConfig> cachingConfig, GooglePhotosService googlePhotosSvc)
+        : base(console, localCache, cachingConfig, googlePhotosSvc) { }
 
     public async override Task<int> OnExecuteAsync(CommandLineApplication app)
     {

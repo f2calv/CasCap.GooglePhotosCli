@@ -34,14 +34,14 @@ internal abstract class CommandBase
     private readonly string _optionsFilePath;
     private readonly string _configFilePath;
 
-    protected CommandBase(IConsole console, ILocalCache localCache, IOptions<CachingOptions> cachingOptions, GooglePhotosService googlePhotosSvc)
+    protected CommandBase(IConsole console, ILocalCache localCache, IOptions<CachingConfig> cachingConfig, GooglePhotosService googlePhotosSvc)
     {
         _console = console;
         _localCache = localCache;
         _googlePhotosSvc = googlePhotosSvc;
         _googlePhotosSvc.PagingEvent += GooglePhotosSvc_PagingEvent;
 
-        _diskCacheFolder = cachingOptions.Value.DiskCacheFolder;
+        _diskCacheFolder = cachingConfig.Value.DiskCacheFolder;
         _optionsFilePath = Path.Combine(_diskCacheFolder, $"{nameof(GooglePhotosOptions)}.json");
         _configFilePath = Path.Combine(_diskCacheFolder, $"{nameof(AppConfig)}.json");
     }

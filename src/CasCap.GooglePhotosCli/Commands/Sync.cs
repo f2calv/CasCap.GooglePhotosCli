@@ -3,7 +3,8 @@
 [Command(Description = "Synchronise media item and album data from remote to local.")]
 internal class Sync : CommandBase
 {
-    public Sync(IConsole console, ILocalCache localCache, IOptions<CachingOptions> cachingOptions, GooglePhotosService googlePhotosSvc) : base(console, localCache, cachingOptions, googlePhotosSvc) { }
+    public Sync(IConsole console, ILocalCache localCache, IOptions<CachingConfig> cachingConfig, GooglePhotosService googlePhotosSvc)
+        : base(console, localCache, cachingConfig, googlePhotosSvc) { }
 
     public async override Task<int> OnExecuteAsync(CommandLineApplication app)
     {

@@ -19,9 +19,9 @@ class Program
             })
             .ConfigureServices((context, services) =>
             {
-                services.AddCasCapCaching(new CachingOptions
+                services.AddCasCapCaching(new CachingConfig
                 {
-                    DiskCache = new CacheOptions
+                    DiskCache = new CacheParameters
                     {
                         SerializationType = SerializationType.Json,
                         IsEnabled = true,

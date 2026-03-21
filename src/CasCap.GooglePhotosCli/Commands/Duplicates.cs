@@ -7,7 +7,7 @@ namespace CasCap.Commands;
 [Command(Description = "Analyse and identify potential duplicate media items in a Google Photos account.")]
 internal class Duplicates : CommandBase
 {
-    public Duplicates(IConsole console, ILocalCache localCache, IOptions<CachingOptions> cachingOptions, GooglePhotosService googlePhotosSvc) : base(console, localCache, cachingOptions, googlePhotosSvc) { }
+    public Duplicates(IConsole console, ILocalCache localCache, IOptions<CachingConfig> cachingConfig, GooglePhotosService googlePhotosSvc) : base(console, localCache, cachingConfig, googlePhotosSvc) { }
 
     [Argument(0, Description = "Which media type do you wish to analyse?")]
     public MediaType type { get; }

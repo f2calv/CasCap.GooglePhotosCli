@@ -8,7 +8,8 @@ namespace CasCap.Commands;
 [Subcommand(typeof(Duplicates))]
 internal class MediaItems : CommandBase
 {
-    public MediaItems(IConsole console, ILocalCache localCache, IOptions<CachingOptions> cachingOptions, GooglePhotosService googlePhotosSvc) : base(console, localCache, cachingOptions, googlePhotosSvc) { }
+    public MediaItems(IConsole console, ILocalCache localCache, IOptions<CachingConfig> cachingConfig, GooglePhotosService googlePhotosSvc)
+        : base(console, localCache, cachingConfig, googlePhotosSvc) { }
 
     public async override Task<int> OnExecuteAsync(CommandLineApplication app)
     {
@@ -20,7 +21,8 @@ internal class MediaItems : CommandBase
     [Command(Description = "List media items")]
     class List : CommandBase
     {
-        public List(IConsole console, ILocalCache localCache, IOptions<CachingOptions> cachingOptions, GooglePhotosService googlePhotosSvc) : base(console, localCache, cachingOptions, googlePhotosSvc) { }
+        public List(IConsole console, ILocalCache localCache, IOptions<CachingConfig> cachingConfig, GooglePhotosService googlePhotosSvc)
+            : base(console, localCache, cachingConfig, googlePhotosSvc) { }
 
         public async override Task<int> OnExecuteAsync(CommandLineApplication app)
         {
