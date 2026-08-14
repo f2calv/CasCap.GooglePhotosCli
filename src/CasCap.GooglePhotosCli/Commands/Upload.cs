@@ -252,7 +252,7 @@ internal class Upload : CommandBase
             var duplicateAlbumsByTitle = GetAlbumDuplicates(allAlbums);
 
             //album titles in google photos don't need to be unique, but we can't assign photos to an existing album
-            //if duplicate titles exist that match one of our required album titles... 
+            //if duplicate titles exist that match one of our required album titles...
             if (duplicateAlbumsByTitle.Count > 0 && duplicateAlbumsByTitle.Any(p => requiredAlbumTitles.Contains(p.title, StringComparer.OrdinalIgnoreCase)))
             {
                 _console.WriteLine($"Duplicate album titles present, unable to assign media item(s) to albums.");
