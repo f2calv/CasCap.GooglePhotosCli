@@ -2,9 +2,6 @@
 
 ## _Unofficial_ Google Photos Command Line Interface
 
-[azdo-badge]: https://dev.azure.com/f2calv/github/_apis/build/status/f2calv.CasCap.GooglePhotosCli?branchName=master
-[azdo-url]: https://dev.azure.com/f2calv/github/_build/latest?definitionId=11&branchName=master
-[azdo-coverage-url]: https://img.shields.io/azure-devops/coverage/f2calv/github/11
 [cascap.apis.googlephotoscli-badge]: https://img.shields.io/nuget/v/googlephotos?color=blue
 [cascap.apis.googlephotoscli-url]: https://nuget.org/packages/googlephotos
 
@@ -98,7 +95,7 @@ Upload media items into your google photos account, with optional pattern;
 ### Feedback/Issues
 
 This CLI is a work in progress, I have started lots of features or left stubs in the code which I hope to eventually complete...
-Please post any issues or feedback [here](https://github.com/f2calv/CasCap.GooglePhotosCli/issues).
+Please post any issues or feedback on the [GitHub issues page](https://github.com/f2calv/CasCap.GooglePhotosCli/issues).
 
 ### License
 
