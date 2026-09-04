@@ -4,13 +4,7 @@
     <RootNamespace>CasCap</RootNamespace>
     <LangVersion>14.0</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
-    <!--nullable we enable on a per project basis-->
-    <!--<Nullable>enable</Nullable>-->
-    <UserSecretsId>255ba51e-c46d-40c4-9420-80d485ea10fe</UserSecretsId>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <Author>Alex Vincent</Author>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -40,7 +34,8 @@
     <!-- IDE0042 - Variable declaration can be deconstructed -->
     <!-- CS0162 - Unreachable code detected. -->
     <!-- S125 - Remove this commented out code. -->
-    <NoWarn>IDE1006;IDE0079;IDE0042;CS0162;S125</NoWarn>
+    <!-- NETSDK1233 - Targeting .NET 10.0 or higher in Visual Studio 2022 XX.XX is not supported. -->
+    <NoWarn>IDE1006;IDE0079;IDE0042;CS0162;S125;NETSDK1233</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup>
