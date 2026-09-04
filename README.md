@@ -1,8 +1,3 @@
----
-title: CasCap.GooglePhotosCli
-description: Unofficial Google Photos command line interface, distributed as a .NET global tool.
----
-
 # CasCap.GooglePhotosCli
 
 An unofficial Google Photos command line interface, distributed as a .NET global tool named `googlephotos`, for uploading media to and organising albums in a Google Photos account.

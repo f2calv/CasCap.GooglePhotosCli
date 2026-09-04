@@ -1,8 +1,3 @@
----
-title: CasCap.GooglePhotosCli Tests
-description: Test structure, coverage and execution commands for the Google Photos CLI.
----
-
 # CasCap.GooglePhotosCli Tests
 
 ## Purpose
