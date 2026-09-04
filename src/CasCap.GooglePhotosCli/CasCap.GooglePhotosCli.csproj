@@ -1,27 +1,54 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
     <AssemblyName>googlephotos</AssemblyName>
+    <UserSecretsId>255ba51e-c46d-40c4-9420-80d485ea10fe</UserSecretsId>
   </PropertyGroup>
 
   <PropertyGroup>
     <IsPackable>true</IsPackable>
-    <Description>Google Photos CLI Tool</Description>
     <PackAsTool>true</PackAsTool>
-    <PackageTags>google,photos,command line interface,cli,backup,sync,tool</PackageTags>
+    <ToolCommandName>googlephotos</ToolCommandName>
+    <Description>Unofficial Google Photos command line interface.</Description>
+    <PackageDescription>
+      $(Description)
+
+      This .NET global tool wraps the CasCap.Api.GooglePhotos library to upload media items to, and
+      manage albums in, a Google Photos account.
+
+      Since Google's API change of 31 March 2025 the Library API only exposes albums and media items
+      created by the calling application, so this tool only lists and downloads content it uploaded.
+
+      For usage examples see the docs on github, https://github.com/f2calv/CasCap.GooglePhotosCli
+    </PackageDescription>
+    <PackageTags>google, photos, command line interface, cli, upload, tool</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="BetterConsoleTables" />
-    <PackageReference Include="CasCap.Api.GooglePhotos" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" />
-    <PackageReference Include="ShellProgressBar" />
     <PackageReference Include="McMaster.Extensions.CommandLineUtils" />
     <PackageReference Include="McMaster.Extensions.Hosting.CommandLine" />
-    <PackageReference Include="SixLabors.ImageSharp" />
-    <PackageReference Include="CasCap.Common.Caching" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <PackageReference Include="ShellProgressBar" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)'=='Debug'">
+    <ProjectReference Include="..\..\..\CasCap.Api.GooglePhotos\src\CasCap.Api.GooglePhotos\CasCap.Api.GooglePhotos.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)'=='Release'">
+    <PackageReference Include="CasCap.Api.GooglePhotos" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

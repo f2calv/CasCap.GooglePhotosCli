@@ -28,6 +28,6 @@ jobs:
           languages: csharp
 
       - name: Build Release solution
-        run: dotnet build ./CasCap.Api.GooglePhotos.Release.slnx --configuration Release
+        run: dotnet build ./CasCap.GooglePhotosCli.Release.slnx --configuration Release
 
       - uses: github/codeql-action/analyze@v4

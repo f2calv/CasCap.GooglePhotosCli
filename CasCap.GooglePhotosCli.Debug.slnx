@@ -1,0 +1,18 @@
+<Solution>
+  <Folder Name="/CasCap.GooglePhotosCli/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+  </Folder>
+  <Folder Name="/CasCap.GooglePhotosCli/CasCap.Common/">
+    <Project Path="../CasCap.Common/src/CasCap.Common.Net/CasCap.Common.Net.csproj" />
+    <Project Path="../CasCap.Common/src/CasCap.Common.Testing/CasCap.Common.Testing.csproj" />
+  </Folder>
+  <Folder Name="/CasCap.GooglePhotosCli/CasCap.Api.GooglePhotos/">
+    <Project Path="../CasCap.Api.GooglePhotos/src/CasCap.Api.GooglePhotos/CasCap.Api.GooglePhotos.csproj" />
+  </Folder>
+  <Folder Name="/CasCap.GooglePhotosCli/">
+    <Project Path="src/CasCap.GooglePhotosCli.Tests/CasCap.GooglePhotosCli.Tests.csproj" />
+    <Project Path="src/CasCap.GooglePhotosCli/CasCap.GooglePhotosCli.csproj" />
+  </Folder>
+</Solution>
