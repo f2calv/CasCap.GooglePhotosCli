@@ -1,29 +1,44 @@
 {
   "profiles": {
-    "GooglePhotosCli": {
+    "help": {
       "commandName": "Project",
-
-      //"commandLineArgs": "albums --help",
-      //"commandLineArgs": "albums add -t \"my album name\""
-      //"commandLineArgs": "albums download -t \"my album name\" -o c:/temp/download"
-      //"commandLineArgs": "albums download -t \"my album name\" -o c:/temp/download --maxwidth 100"
-      //"commandLineArgs": "albums download -t \"my album name\" -o c:/temp/download --maxheight 100"
-      //"commandLineArgs": "albums download -t \"my album name\" -o c:/temp/download --maxheight 100 --crop"
-      //"commandLineArgs": "albums download -t \"my album name\" -o c:/temp/download --maxheight 100 --crop --exif"
-      "commandLineArgs": "albums download -t \"my album name\" -o c:/temp/download --maxheight 100 --crop --exif --overwrite"
-      //"commandLineArgs": "albums list"
-      //"commandLineArgs": "albums list --duplicates"
-      //"commandLineArgs": "albums sync"
-
-      //"commandLineArgs": "logout"
-
-      //"commandLineArgs": "mediaitems --help"
-      //"commandLineArgs": "mediaitems duplicates"
-      //"commandLineArgs": "mediaitems list"
-      //"commandLineArgs": "mediaitems upload -s C:/temp/fotos"
-      //"commandLineArgs": "mediaitems sync"
-
-      //"commandLineArgs": "sync"
+      "commandLineArgs": "--help"
+    },
+    "albums list": {
+      "commandName": "Project",
+      "commandLineArgs": "albums list"
+    },
+    "albums list --duplicates": {
+      "commandName": "Project",
+      "commandLineArgs": "albums list --duplicates"
+    },
+    "albums add": {
+      "commandName": "Project",
+      "commandLineArgs": "albums add -t \"my album name\""
+    },
+    "albums download": {
+      "commandName": "Project",
+      "commandLineArgs": "albums download -t \"my album name\" -o ./download"
+    },
+    "albums download resized": {
+      "commandName": "Project",
+      "commandLineArgs": "albums download -t \"my album name\" -o ./download --maxheight 100 --crop --exif --overwrite"
+    },
+    "mediaitems list": {
+      "commandName": "Project",
+      "commandLineArgs": "mediaitems list"
+    },
+    "mediaitems upload": {
+      "commandName": "Project",
+      "commandLineArgs": "mediaitems upload -s ./photos"
+    },
+    "mediaitems upload to album": {
+      "commandName": "Project",
+      "commandLineArgs": "mediaitems upload -s ./photos --pattern *.jpg -t \"my album name\""
+    },
+    "logout": {
+      "commandName": "Project",
+      "commandLineArgs": "logout"
     }
   }
 }

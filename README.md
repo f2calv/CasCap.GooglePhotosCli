@@ -1,105 +1,152 @@
-# Google Photos CLI (a work in progress)
+# CasCap.GooglePhotosCli
 
-## _Unofficial_ Google Photos Command Line Interface
+An unofficial Google Photos command line interface, distributed as a .NET global tool named `googlephotos`, for uploading media to and organising albums in a Google Photos account.
 
-[azdo-badge]: https://dev.azure.com/f2calv/github/_apis/build/status/f2calv.CasCap.GooglePhotosCli?branchName=master
-[azdo-url]: https://dev.azure.com/f2calv/github/_build/latest?definitionId=11&branchName=master
-[azdo-coverage-url]: https://img.shields.io/azure-devops/coverage/f2calv/github/11
-[cascap.apis.googlephotoscli-badge]: https://img.shields.io/nuget/v/googlephotos?color=blue
-[cascap.apis.googlephotoscli-url]: https://nuget.org/packages/googlephotos
+[cascap.googlephotoscli-badge]: https://img.shields.io/nuget/v/googlephotos?color=blue
+[cascap.googlephotoscli-url]: https://nuget.org/packages/googlephotos
 
-![CI](https://github.com/f2calv/CasCap.GooglePhotosCli/actions/workflows/ci.yml/badge.svg) [![Coverage Status](https://coveralls.io/repos/github/f2calv/CasCap.GooglePhotosCli/badge.svg?branch=main)](https://coveralls.io/github/f2calv/CasCap.GooglePhotosCli?branch=main) [![SonarCloud Coverage](https://sonarcloud.io/api/project_badges/measure?project=f2calv_CasCap.GooglePhotosCli&metric=code_smells)](https://sonarcloud.io/component_measures/metric/code_smells/list?id=f2calv_CasCap.GooglePhotosCli) [![Nuget][cascap.apis.googlephotoscli-badge]][cascap.apis.googlephotoscli-url]
+![CI](https://github.com/f2calv/CasCap.GooglePhotosCli/actions/workflows/ci.yml/badge.svg) [![Coverage Status](https://coveralls.io/repos/github/f2calv/CasCap.GooglePhotosCli/badge.svg?branch=main)](https://coveralls.io/github/f2calv/CasCap.GooglePhotosCli?branch=main) [![Nuget][cascap.googlephotoscli-badge]][cascap.googlephotoscli-url]
 
-This is an _unofficial_ Google Photos CLI which can be installed as a .NET Global Tool.
+## Important: Google changed the Photos APIs on 31 March 2025
 
-Google Photos CLI is an _unofficial_ utility which leverages the [CasCap.Apis.GooglePhotos](https://github.com/f2calv/CasCap.Apis.GooglePhotos) library to perform common and helpful operations against the media items held in your Google Photos account.
+Google fundamentally reduced what any third-party application can do with a user's Google Photos library. This tool, and the [CasCap.Api.GooglePhotos](https://github.com/f2calv/CasCap.Api.GooglePhotos) library beneath it, are limited by that change:
 
-If you find this tool of use then please give it a thumbs-up by giving this repository a :star: ... :wink:
+- The Library API can only see **albums and media items created by this tool's own OAuth client**. Everything already in your account is invisible to it.
+- Reading an entire library, and therefore whole-library duplicate detection and whole-library backup, is no longer possible.
+- Library API sharing and shared-album operations were withdrawn entirely.
+- Existing user media can only be reached through the Picker API, which requires the user to select items interactively, one session at a time.
 
-Key functionality;
+Version 1.0 removes the commands that depended on whole-library access rather than leaving them to return misleading partial results. See [Google's API update](https://developers.google.com/photos/support/updates).
 
-- Media item upload
-- Media item download/backup
-- Media item duplicate detection
+### Removed in version 1.0
 
-## Installation/Set-up
+| Command | Reason |
+| --- | --- |
+| `mediaitems duplicates` | Duplicate detection needs to read the whole library. |
+| `sync`, `albums sync` | There is no library-wide metadata left to cache. |
+| Interactive credential prompt | Credentials now come from configuration; see [Configuration](#configuration). |
 
-The Google Photos CLI is distributed as a [.NET Core Global Tool](https://docs.microsoft.com/en-us/dotnet/core/tools/global-tools), to install the tool follow these steps;
+## Installation
 
-- Follow [these instructions](https://github.com/f2calv/CasCap.Apis.GooglePhotos#google-photos-api-set-up) to set-up OAuth login details.
-- Download and install either the [.NET Core 3.1 SDK](https://dotnet.microsoft.com/download/dotnet-core/3.1) or [.NET 6.0 SDK](https://dotnet.microsoft.com/download/dotnet/6.0).
-- From a command line shell install the tool `dotnet tool update --global googlephotos`
+The tool is distributed as a [.NET global tool](https://learn.microsoft.com/dotnet/core/tools/global-tools):
 
-Now check the tool is installed by entering `googlephotos` at a shell.
+```powershell
+dotnet tool update --global googlephotos
+```
+
+It requires the [.NET 10 runtime](https://dotnet.microsoft.com/download/dotnet/10.0).
+
+## Google Cloud setup
+
+1. Create a project in the [Google Cloud console](https://console.cloud.google.com/).
+2. Open **APIs & Services > Library** and enable **Google Photos Library API**.
+3. Configure the OAuth consent screen and create an **OAuth client ID** of type **Desktop app**.
+4. Note the client ID and client secret; they are supplied through configuration below.
+
+Full setup guidance lives in the [library documentation](https://github.com/f2calv/CasCap.Api.GooglePhotos#google-cloud-setup).
+
+## Configuration
+
+The tool binds the `CasCap:GooglePhotosOptions` section from, in ascending order of precedence, the shipped `appsettings.json`, an `appsettings.json` in the current working directory, .NET User Secrets, and environment variables.
+
+Because a global tool installs into a read-only store, User Secrets or environment variables are the practical choice:
+
+```powershell
+$env:CasCap__GooglePhotosOptions__User = "your.email@example.com"
+$env:CasCap__GooglePhotosOptions__ClientId = "000000000000-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.apps.googleusercontent.com"
+$env:CasCap__GooglePhotosOptions__ClientSecret = "your-client-secret"
+```
+
+Or an `appsettings.json` beside where you run the tool:
+
+```json
+{
+  "CasCap": {
+    "GooglePhotosOptions": {
+      "User": "your.email@example.com",
+      "ClientId": "000000000000-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.apps.googleusercontent.com",
+      "ClientSecret": "your-client-secret",
+      "Scopes": [
+        "AppendOnly",
+        "ReadOnlyAppCreatedData",
+        "EditAppCreatedData"
+      ]
+    }
+  }
+}
+```
+
+| Scope | Needed for |
+| --- | --- |
+| `AppendOnly` | `mediaitems upload`, `albums add` |
+| `ReadOnlyAppCreatedData` | `albums list`, `albums download`, `mediaitems list` |
+| `EditAppCreatedData` | Adding uploaded media items to albums |
+
+Never commit a client secret. The OAuth grant itself is cached by `Google.Apis.Auth` under `%APPDATA%/googlephotos/auth` (or the platform equivalent) and can be cleared with `googlephotos logout`.
 
 ## Usage
 
-Use the context-sensitive help command to discover additional functionality/arguments;
+Every command has context-sensitive help:
 
-- `googlephotos --help`
-
-The tool will download and cache album and media item _metadata_ locally for speed during duplicate detection. This local cache data is stored in your user profile. If you use the `logout` command this local cache will be deleted;
-
-- `googlephotos logout`
+```powershell
+googlephotos --help
+googlephotos albums --help
+```
 
 ### Albums
 
-Show context-senstive help for the albums sub-command;
+```powershell
+# list the albums this tool created
+googlephotos albums list
 
-- `googlephotos albums --help`
+# show only albums which share a title with another album
+googlephotos albums list --duplicates
 
-List all albums;
+# create an empty album
+googlephotos albums add -t "my album title"
 
-- `googlephotos albums list`
+# download an album's media items
+googlephotos albums download -t "my album title" -o ./download
 
-Show albums with duplicate names;
+# download resized, cropped, EXIF-preserving copies
+googlephotos albums download -t "my album title" -o ./download --maxheight 100 --crop --exif --overwrite
+```
 
-- `googlephotos albums list --duplicates`
+### Media items
 
-Add/create a new empty album with a title of 'my album title';
+```powershell
+# list the media items this tool created
+googlephotos mediaitems list
 
-- `googlephotos albums add -t "my album title"`
+# upload a folder tree
+googlephotos mediaitems upload -s ./photos
 
-Download media items from specified album title into a folder;
+# upload only JPEGs, into a named album, without prompting
+googlephotos mediaitems upload -s ./photos --pattern *.jpg -t "holiday 2026" -y
 
-- `googlephotos albums download -t "my album title" -o c:/temp/download`
+# upload a folder tree, creating one album per sub-folder
+googlephotos mediaitems upload -s ./photos --hierarchy
+```
 
-Download media items from specified album title into a folder, thumbnails, cropped, with EXIF information (except location);
+### Sign out
 
-- `googlephotos albums download -t "my album title" -o c:/temp/download --maxwidth 100`
-- `googlephotos albums download -t "my album title" -o c:/temp/download --maxheight 100`
-- `googlephotos albums download -t "my album title" -o c:/temp/download --maxheight 100 --crop`
-- `googlephotos albums download -t "my album title" -o c:/temp/download --maxheight 100 --crop --exif`
-- `googlephotos albums download -t "my album title" -o c:/temp/download --maxheight 100 --crop --exif --overwrite`
+```powershell
+googlephotos logout
+```
 
-Re-sync local album data with the latest data from the API;
+## Development
 
-- `googlephotos albums sync`
+```powershell
+dotnet build CasCap.GooglePhotosCli.Debug.slnx
+dotnet test src/CasCap.GooglePhotosCli.Tests/CasCap.GooglePhotosCli.Tests.csproj
+```
 
-### MediaItems
+The Debug solution resolves `CasCap.Api.GooglePhotos` through a local project reference, so it expects that repository to be cloned alongside this one. The Release solution uses the published NuGet package.
 
-Show context-senstive help for the media items sub-command;
+## Feedback and issues
 
-- `googlephotos mediaitems --help`
+Please raise anything on the [GitHub issues page](https://github.com/f2calv/CasCap.GooglePhotosCli/issues).
 
-List all media items (this could be a very long list!);
+## License
 
-- `googlephotos mediaitems list`
-
-Anaylse all meta data and search for possible duplicates;
-
-- `googlephotos mediaitems duplicates`
-
-Upload media items into your google photos account, with optional pattern;
-
-- `googlephotos mediaitems upload -s C:/temp/fotos`
-- `googlephotos mediaitems upload -s C:/temp/fotos --pattern *.jpg`
-
-### Feedback/Issues
-
-This CLI is a work in progress, I have started lots of features or left stubs in the code which I hope to eventually complete...
-Please post any issues or feedback [here](https://github.com/f2calv/CasCap.GooglePhotosCli/issues).
-
-### License
-
-GooglePhotosCli is Copyright &copy; 2020 [@f2calv](https://github.com/f2calv) under the [MIT license](LICENSE).
+CasCap.GooglePhotosCli is Copyright &copy; 2020 [@f2calv](https://github.com/f2calv) under the [MIT license](LICENSE).

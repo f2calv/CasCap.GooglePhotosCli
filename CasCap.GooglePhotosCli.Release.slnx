@@ -1,0 +1,14 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="Release" />
+  </Configurations>
+  <Folder Name="/CasCap.GooglePhotosCli/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+  </Folder>
+  <Folder Name="/CasCap.GooglePhotosCli/">
+    <Project Path="src/CasCap.GooglePhotosCli.Tests/CasCap.GooglePhotosCli.Tests.csproj" />
+    <Project Path="src/CasCap.GooglePhotosCli/CasCap.GooglePhotosCli.csproj" />
+  </Folder>
+</Solution>

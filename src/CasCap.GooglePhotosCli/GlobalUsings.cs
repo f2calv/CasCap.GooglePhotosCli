@@ -1,0 +1,12 @@
+global using BetterConsoleTables;
+global using CasCap.Commands;
+global using CasCap.Messages;
+global using CasCap.Models;
+global using CasCap.Services;
+global using McMaster.Extensions.CommandLineUtils;
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.Hosting;
+global using Microsoft.Extensions.Logging;
+global using ShellProgressBar;
+global using System.ComponentModel.DataAnnotations;
+global using System.Reflection;
