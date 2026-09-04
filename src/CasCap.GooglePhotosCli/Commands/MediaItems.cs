@@ -5,7 +5,7 @@ namespace CasCap.Commands;
 [Command("mediaitems", Description = "Manage media items created by this tool.")]
 [Subcommand(typeof(Upload))]
 [Subcommand(typeof(List))]
-internal sealed class MediaItems(ILogger<MediaItems> logger, IConsole console, GooglePhotosService googlePhotosSvc)
+internal sealed class MediaItems(ILogger<MediaItems> logger, IConsole console, Lazy<GooglePhotosService> googlePhotosSvc)
     : CommandBase(logger, console, googlePhotosSvc)
 {
     /// <inheritdoc/>
@@ -17,7 +17,7 @@ internal sealed class MediaItems(ILogger<MediaItems> logger, IConsole console, G
 
     /// <summary>Lists the media items created by this tool.</summary>
     [Command(Description = "List media items created by this tool.")]
-    private sealed class List(ILogger<List> logger, IConsole console, GooglePhotosService googlePhotosSvc)
+    private sealed class List(ILogger<List> logger, IConsole console, Lazy<GooglePhotosService> googlePhotosSvc)
         : CommandBase(logger, console, googlePhotosSvc)
     {
         /// <inheritdoc/>

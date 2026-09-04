@@ -8,7 +8,7 @@ internal sealed class Logout(
     ILogger<Logout> logger,
     IOptions<GooglePhotosOptions> googlePhotosOptions,
     IConsole console,
-    GooglePhotosService googlePhotosSvc)
+    Lazy<GooglePhotosService> googlePhotosSvc)
     : CommandBase(logger, console, googlePhotosSvc)
 {
     /// <summary>Deletes the cached credentials without asking for confirmation.</summary>

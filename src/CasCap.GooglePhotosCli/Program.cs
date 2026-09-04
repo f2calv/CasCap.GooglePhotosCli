@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 
 namespace CasCap;
@@ -37,12 +38,20 @@ internal sealed class Program
             {
                 services.AddSingleton(PhysicalConsole.Singleton);
                 services.AddGooglePhotos(context.Configuration);
+                //Commands are constructed while parsing, including for --help, so resolving the typed
+                //client eagerly would demand valid credentials before the user can read the help text.
+                services.AddSingleton(serviceProvider =>
+                    new Lazy<GooglePhotosService>(serviceProvider.GetRequiredService<GooglePhotosService>));
                 services.PostConfigure<GooglePhotosOptions>(options =>
                 {
                     //Own the OAuth cache so 'logout' can clear it without touching other applications' Google credentials.
                     if (string.IsNullOrWhiteSpace(options.FileDataStoreFullPathOverride))
                         options.FileDataStoreFullPathOverride = DefaultDataStorePath;
                 });
+                //AddGooglePhotos validates on host start, which would make 'googlephotos --help' fail before
+                //the user has any credentials. The same validators still run when the options are first read,
+                //so an unconfigured tool fails on the command which actually needs Google, not on every command.
+                services.RemoveAll<IStartupValidator>();
             });
 
         try

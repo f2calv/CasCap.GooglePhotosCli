@@ -99,6 +99,8 @@ public sealed class CommandParsingTests
             Scopes = [GooglePhotosScope.ReadOnlyAppCreatedData],
             FileDataStoreFullPathOverride = Path.Combine(Path.GetTempPath(), "googlephotos-tests")
         });
+        services.AddSingleton(serviceProvider =>
+            new Lazy<GooglePhotosService>(serviceProvider.GetRequiredService<GooglePhotosService>));
         var serviceProvider = services.BuildServiceProvider();
 
         var app = new CommandLineApplication<Program>();

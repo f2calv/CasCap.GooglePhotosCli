@@ -6,7 +6,7 @@ namespace CasCap.Commands;
 [Subcommand(typeof(Add))]
 [Subcommand(typeof(List))]
 [Subcommand(typeof(Download))]
-internal sealed class Albums(ILogger<Albums> logger, IConsole console, GooglePhotosService googlePhotosSvc)
+internal sealed class Albums(ILogger<Albums> logger, IConsole console, Lazy<GooglePhotosService> googlePhotosSvc)
     : CommandBase(logger, console, googlePhotosSvc)
 {
     /// <inheritdoc/>
@@ -18,7 +18,7 @@ internal sealed class Albums(ILogger<Albums> logger, IConsole console, GooglePho
 
     /// <summary>Lists the albums created by this tool.</summary>
     [Command(Description = "List albums created by this tool.")]
-    private sealed class List(ILogger<List> logger, IConsole console, GooglePhotosService googlePhotosSvc)
+    private sealed class List(ILogger<List> logger, IConsole console, Lazy<GooglePhotosService> googlePhotosSvc)
         : CommandBase(logger, console, googlePhotosSvc)
     {
         /// <summary>Restricts output to albums sharing a title with another album.</summary>
@@ -54,7 +54,7 @@ internal sealed class Albums(ILogger<Albums> logger, IConsole console, GooglePho
 
     /// <summary>Creates a new empty album.</summary>
     [Command(Description = "Add a new album.")]
-    private sealed class Add(ILogger<Add> logger, IConsole console, GooglePhotosService googlePhotosSvc)
+    private sealed class Add(ILogger<Add> logger, IConsole console, Lazy<GooglePhotosService> googlePhotosSvc)
         : CommandBase(logger, console, googlePhotosSvc)
     {
         /// <summary>Title of the album to create or retrieve.</summary>
@@ -81,7 +81,7 @@ internal sealed class Albums(ILogger<Albums> logger, IConsole console, GooglePho
 
     /// <summary>Downloads the media items belonging to an album.</summary>
     [Command(Description = "Download the media items of an album created by this tool.")]
-    private sealed class Download(ILogger<Download> logger, IConsole console, GooglePhotosService googlePhotosSvc)
+    private sealed class Download(ILogger<Download> logger, IConsole console, Lazy<GooglePhotosService> googlePhotosSvc)
         : CommandBase(logger, console, googlePhotosSvc)
     {
         /// <summary>Title of the album to download.</summary>

@@ -2,7 +2,7 @@ namespace CasCap.Commands;
 
 /// <summary>Uploads local media files to Google Photos.</summary>
 [Command(Description = "Upload media items to your Google Photos account.")]
-internal sealed class Upload(ILogger<Upload> logger, IConsole console, GooglePhotosService googlePhotosSvc)
+internal sealed class Upload(ILogger<Upload> logger, IConsole console, Lazy<GooglePhotosService> googlePhotosSvc)
     : CommandBase(logger, console, googlePhotosSvc)
 {
     private ChildProgressBar? _childPbar;

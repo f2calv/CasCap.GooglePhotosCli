@@ -2,7 +2,7 @@ namespace CasCap.Commands;
 
 /// <summary>Shared behaviour for every command, covering login, paging feedback and file helpers.</summary>
 [HelpOption("--help")]
-internal abstract class CommandBase(ILogger logger, IConsole console, GooglePhotosService googlePhotosSvc)
+internal abstract class CommandBase(ILogger logger, IConsole console, Lazy<GooglePhotosService> googlePhotosSvc)
 {
     /// <summary>Logger available to inheriting commands.</summary>
     protected readonly ILogger _logger = logger;
@@ -10,8 +10,8 @@ internal abstract class CommandBase(ILogger logger, IConsole console, GooglePhot
     /// <summary>Console used for all user-facing presentation.</summary>
     protected readonly IConsole _console = console;
 
-    /// <summary>Google Photos Library API client.</summary>
-    protected readonly GooglePhotosService _googlePhotosSvc = googlePhotosSvc;
+    /// <summary>Google Photos Library API client, activated on first use.</summary>
+    protected GooglePhotosService _googlePhotosSvc => googlePhotosSvc.Value;
 
     /// <summary>Progress bar styling shared by every long-running command.</summary>
     protected static ProgressBarOptions PbarOptions { get; } = new()
