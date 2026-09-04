@@ -250,7 +250,7 @@ internal sealed class Upload(ILogger<Upload> logger, IConsole console, Lazy<Goog
                 .ToList();
             if (ids.Count == 0) continue;
             var added = await _googlePhotosSvc.AddMediaItemsToAlbumAsync(album.Id, ids, cancellationToken);
-            table.AddRow(album.Title, added ? $"{ids.Count} media item(s) added" : "failed");
+            table.AddRow(title, added ? $"{ids.Count} media item(s) added" : "failed");
         }
         _console.Write(table.ToString());
         _console.WriteLine();

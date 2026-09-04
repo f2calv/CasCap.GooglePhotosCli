@@ -60,7 +60,10 @@ internal abstract class CommandBase(ILogger logger, IConsole console, Lazy<Googl
     }
 
     /// <summary>Renders a Markdown table of albums to the console.</summary>
-    protected void DisplayAlbums(IReadOnlyList<Album> albums)
+    protected void DisplayAlbums(IReadOnlyList<Album> albums) => _console.Write(BuildAlbumTable(albums));
+
+    /// <summary>Builds the Markdown album table.</summary>
+    internal static string BuildAlbumTable(IReadOnlyList<Album> albums)
     {
         var headers = new[]
         {
@@ -71,8 +74,17 @@ internal abstract class CommandBase(ILogger logger, IConsole console, Lazy<Googl
         };
         var table = new Table(headers) { Config = TableConfiguration.Markdown() };
         for (var i = 0; i < albums.Count; i++)
-            table.AddRow(i + 1, albums[i].Title, albums[i].MediaItemsCount, albums[i].Id);
-        _console.Write(table.ToString());
+        {
+            var album = albums[i];
+            //Google omits mediaItemsCount for an empty album and title for an untitled one; the table
+            //renderer dereferences every cell, so a null would abort the whole listing.
+            table.AddRow(
+                i + 1,
+                album.Title ?? string.Empty,
+                album.MediaItemsCount?.ToString() ?? "0",
+                album.Id ?? string.Empty);
+        }
+        return table.ToString();
     }
 
     /// <summary>Returns the path of <paramref name="fileInfo"/> relative to <paramref name="rootPath"/>.</summary>
