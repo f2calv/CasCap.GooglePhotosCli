@@ -39,10 +39,6 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" />
     <PackageReference Include="ShellProgressBar" />
   </ItemGroup>
-
-  <ItemGroup Condition="'$(Configuration)'=='Debug'">
-    <ProjectReference Include="..\..\..\CasCap.Api.GooglePhotos\src\CasCap.Api.GooglePhotos\CasCap.Api.GooglePhotos.csproj" />
-  </ItemGroup>
   <ItemGroup Condition="'$(Configuration)'=='Release'">
     <PackageReference Include="CasCap.Api.GooglePhotos" />
   </ItemGroup>
