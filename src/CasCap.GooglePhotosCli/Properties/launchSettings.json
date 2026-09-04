@@ -3,27 +3,20 @@
     "GooglePhotosCli": {
       "commandName": "Project",
 
-      //"commandLineArgs": "albums --help",
-      //"commandLineArgs": "albums add -t \"my album name\""
-      //"commandLineArgs": "albums download -t \"my album name\" -o c:/temp/download"
-      //"commandLineArgs": "albums download -t \"my album name\" -o c:/temp/download --maxwidth 100"
-      //"commandLineArgs": "albums download -t \"my album name\" -o c:/temp/download --maxheight 100"
-      //"commandLineArgs": "albums download -t \"my album name\" -o c:/temp/download --maxheight 100 --crop"
-      //"commandLineArgs": "albums download -t \"my album name\" -o c:/temp/download --maxheight 100 --crop --exif"
-      "commandLineArgs": "albums download -t \"my album name\" -o c:/temp/download --maxheight 100 --crop --exif --overwrite"
+      "commandLineArgs": "--help"
+      //"commandLineArgs": "albums --help"
       //"commandLineArgs": "albums list"
       //"commandLineArgs": "albums list --duplicates"
-      //"commandLineArgs": "albums sync"
-
-      //"commandLineArgs": "logout"
+      //"commandLineArgs": "albums add -t \"my album name\""
+      //"commandLineArgs": "albums download -t \"my album name\" -o c:/temp/download"
+      //"commandLineArgs": "albums download -t \"my album name\" -o c:/temp/download --maxheight 100 --crop --exif --overwrite"
 
       //"commandLineArgs": "mediaitems --help"
-      //"commandLineArgs": "mediaitems duplicates"
       //"commandLineArgs": "mediaitems list"
       //"commandLineArgs": "mediaitems upload -s C:/temp/fotos"
-      //"commandLineArgs": "mediaitems sync"
+      //"commandLineArgs": "mediaitems upload -s C:/temp/fotos --pattern *.jpg -t \"my album name\""
 
-      //"commandLineArgs": "sync"
+      //"commandLineArgs": "logout"
     }
   }
 }
