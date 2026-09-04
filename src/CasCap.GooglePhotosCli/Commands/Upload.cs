@@ -1,281 +1,285 @@
-﻿using BetterConsoleTables;
-using MimeTypes;
-using ShellProgressBar;
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
-
 namespace CasCap.Commands;
 
-[Command(Description = "Upload media items to Google Photos account.")]
-internal class Upload : CommandBase
+/// <summary>Uploads local media files to Google Photos.</summary>
+[Command(Description = "Upload media items to your Google Photos account.")]
+internal sealed class Upload(ILogger<Upload> logger, IConsole console, GooglePhotosService googlePhotosSvc)
+    : CommandBase(logger, console, googlePhotosSvc)
 {
-    public Upload(IConsole console, DiskCacheService diskCacheSvc, GooglePhotosService googlePhotosSvc) : base(console, diskCacheSvc, googlePhotosSvc)
-    {
-        _googlePhotosSvc.UploadProgressEvent += _googlePhotosSvc_UploadProgressEvent;
-    }
+    private ChildProgressBar? _childPbar;
 
+    /// <summary>Path to a media file or to the root of a folder tree.</summary>
     [Required]
     [Option("-s|--source", Description = "Path to media item or folder root.")]
-    public string path { get; }
+    public string Path { get; } = default!;
 
-    [Option("--pattern", Description = "Inclusive folder wildcard filter (defaults to all google supported extensions).")]
-    public string searchPattern { get; } = "*.*";//autodetect
+    /// <summary>Wildcard filter applied while enumerating the source folder.</summary>
+    [Option("--pattern", Description = "Inclusive folder wildcard filter (defaults to all Google supported extensions).")]
+    public string SearchPattern { get; } = "*.*";
 
-    [Option("--webp", Description = "Convert and upload media items in WEBP format.")]
-    public bool webp { get; }//how to set webp value?
+    /// <summary>Deletes each local file after it has been uploaded successfully.</summary>
+    [Option("-d|--delete", Description = "Delete the local media file after a successful upload.")]
+    public bool DeleteLocal { get; }
 
-    [Option("-d|--delete", Description = "Delete local media album after successful upload.")]
-    public bool deleteLocal { get; }
+    /// <summary>Title of the album every uploaded media item is added to.</summary>
+    [Option("-t|--title", Description = "Upload into the album with this title.")]
+    public string? AlbumTitle { get; }
 
-    [Option("-t|--title", Description = "Upload to album with this title.")]
-    public string albumTitle { get; }
+    /// <summary>Derives album titles from the folder names below the source root.</summary>
+    [Option("-h|--hierarchy", Description = "Upload into albums named after the source folder names.")]
+    public bool AlbumHierarchy { get; }
 
-    [Option("-h|--hierarchy", Description = "Upload to albums based on folder names.")]
-    public bool albumHierarchy { get; }
-
-    [Option("-y|--yes", Description = "Assume Yes.")]
+    /// <summary>Uploads without asking for confirmation.</summary>
+    [Option("-y|--yes", Description = "Upload without prompting for confirmation.")]
     public bool AutoConfirm { get; }
 
-    //create album if not found?
-    void _googlePhotosSvc_UploadProgressEvent(object sender, UploadProgressEventArgs e)
+    //TODO: re-instate WEBP conversion on upload. It was removed with SixLabors.ImageSharp, whose
+    //split licence is unsuitable for a freely distributed tool.
+    //See https://github.com/f2calv/CasCap.GooglePhotosCli/issues
+
+    /// <inheritdoc/>
+    public override async Task<int> OnExecuteAsync(CommandLineApplication app, CancellationToken cancellationToken)
     {
-        var str = $"{e.fileName} : {(int)e.uploadedBytes.GetSizeInKB()} of {(int)e.totalBytes.GetSizeInKB()} Kb";
-        Debug.WriteLine(str);
-        childPBar.Tick((int)e.uploadedBytes, str);
-    }
+        var exitCode = await base.OnExecuteAsync(app, cancellationToken);
+        if (exitCode != 0) return exitCode;
 
-    public async override Task<int> OnExecuteAsync(CommandLineApplication app)
-    {
-        await base.OnExecuteAsync(app);
+        _googlePhotosSvc.UploadProgressEvent += OnUploadProgress;
 
-        var rootPath = Path.GetFullPath(path);
+        var rootPath = System.IO.Path.GetFullPath(Path);
+        var items = SelectUploadableFiles(rootPath);
+        if (items.Count == 0) return 0;
 
-        _console.Write($"Checking for file(s)... ");
-        var allFileInfos = GetFiles(path, searchPattern);
-        var items = new List<MyMediaFileItem>(allFileInfos.Count);
-
-        if (allFileInfos.IsNullOrEmpty())
-            _console.WriteLine($" 0 files found at {rootPath}");
-        else
-        {
-            var checkForUploadableFileTypes = allFileInfos.GroupBy(p => Path.GetExtension(p.Name), StringComparer.InvariantCultureIgnoreCase)
-                .Select(g => new
-                {
-                    Extension = g.Key,
-                    MimeType = MimeTypeMap.GetMimeType(g.Key),
-                    Count = g.Count(),
-                    TotalBytes = g.Sum(p => p.Length)
-                })
-                .ToList();
-            _console.WriteLine($"located {allFileInfos.Count} file(s), breakdown of file types;");
-            _console.WriteLine();
-            //todo: do we also analyse the files with ImageSharp/Exif?
-
-            var headers = new[] { new ColumnHeader("File Extension"), new ColumnHeader("Mime Type"), new ColumnHeader("Count", Alignment.Right), new ColumnHeader("Size (MB)", Alignment.Right), new ColumnHeader("Status") };
-            var table = new Table(headers) { Config = TableConfiguration.Markdown() };
-            foreach (var f in checkForUploadableFileTypes.OrderBy(p => p.Extension))
-            {
-                var status = string.Empty;
-                if (!GooglePhotosService.IsFileUploadableByExtension(f.Extension))
-                    status = "Unsupported file extension, will not be uploaded.";
-                table.AddRow(f.Extension, f.MimeType, f.Count, f.TotalBytes.GetSizeInMB().ToString("0.0"), status);
-            }
-            //below summary row breaks the progress bar somehow
-            //table.AddRow(string.Empty, string.Empty, allFileInfos.Count, allFileInfos.Sum(p => p.Length.GetSizeInMB()).ToString("0.0"), string.Empty);
-            Console.Write(table.ToString());
-            _console.WriteLine();
-
-            //add all uploadable files into a new collection
-            foreach (var fileInfo in allFileInfos)
-                if (GooglePhotosService.IsFileUploadable(fileInfo.FullName))
-                    items.Add(new MyMediaFileItem { fileInfo = fileInfo });
-        }
-        if (items.IsNullOrEmpty())
-        {
-            _console.WriteLine($"{items.Count} uploadable file(s)");
+        var totalBytes = items.Sum(p => p.FileInfo!.Length);
+        var totalMegabytes = totalBytes / 1024d / 1024d;
+        if (!AutoConfirm && !Prompt.GetYesNo($"Upload {items.Count} file(s), {totalMegabytes:#,##0.0} MB?", false, ConsoleColor.Cyan))
             return 0;
-        }
 
-        {
-            //extract album information from the folder structure (if requested)
-            _console.WriteLine($"{items.Count} file(s) to be uploaded;");
-            _console.WriteLine();
+        if (!await UploadMediaBytesAsync(items, cancellationToken)) return 1;
 
-            var headers = new[] { new ColumnHeader("Relative Path"), new ColumnHeader("Size (KB)", Alignment.Right), new ColumnHeader("Album(s)") };
-            var table = new Table(headers) { Config = TableConfiguration.Markdown() };
-            foreach (var item in items)
-            {
-                item.relPath = GetRelPath(rootPath, item.fileInfo);
-                item.albums = GetAlbums(item);
-                table.AddRow(item.relPath, item.fileInfo.Length.GetSizeInKB().ToString("#,###,###"), string.Join(", ", item.albums));
-            }
-            Console.Write(table.ToString());
-            _console.WriteLine();
-        }
-
-
-        string[] GetAlbums(MyMediaFileItem item)
-        {
-            var albums = item.relPath.Substring(0, item.relPath.LastIndexOf(item.fileInfo.Name));
-            if (albums.StartsWith(Path.DirectorySeparatorChar)) albums = albums.Substring(1);
-            if (albums.EndsWith(Path.DirectorySeparatorChar)) albums = albums.Substring(0, albums.Length - 1);
-            var myAlbums = albums.Split(Path.DirectorySeparatorChar);
-            return myAlbums;
-        }
-
-
-        //note: if we are uploading a crazy amount of data ProgressBar only supports int for ticks, so may break :/
-        var totalBytes = items.Sum(p => p.fileInfo.Length);
-        if (totalBytes > int.MaxValue)
-            throw new GenericException($"Unable to upload more than {((long)int.MaxValue).GetSizeInMB()} in one session!");
-
-        var totalKBytes = totalBytes.GetSizeInKB();
-
-        if (!AutoConfirm && !Prompt.GetYesNo($"Hit (Y)es to upload {items.Count} files, {totalBytes.GetSizeInMB():###,###} MB...", false, ConsoleColor.Cyan))
-            return 0;
-        else
-            _console.WriteLine($"Now uploading {items.Count} files, {totalBytes.GetSizeInMB():###,###} MB...");
-
-        var dtStart = DateTime.UtcNow;
-        var estimatedDuration = TimeSpan.FromMilliseconds(items.Count * 2_000);//set gu-estimatedDuration
-
-        pbar = new ProgressBar((int)totalBytes, $"Uploading {items.Count} media item(s)...", pbarOptions)
-        {
-            EstimatedDuration = estimatedDuration
-        };
-
-        //do we upload an assign to library(and albums) as we progress?
-        //or
-        //do we upload all and get the uploadTokens, then assign to the library(and albums) in a second step?
-        //...which gives the user to bomb out if a file isn't successfully uploaded?
-        var uploadedFileCount = 0;
-        var uploadedTotalBytes = 0;
-        foreach (var item in items)
-        {
-            var str = $"{item.fileInfo.Name} : 0 of {(int)item.fileInfo.Length.GetSizeInKB()} Kb";
-            childPBar = pbar.Spawn((int)item.fileInfo.Length, str, childPbarOptions);
-
-            //todo: pass Action or Func for a callback instead of raising an event?
-            var uploadToken = await _googlePhotosSvc.UploadMediaAsync(item.fileInfo.FullName/*, callback: child.Tick()*/);
-            if (!string.IsNullOrWhiteSpace(uploadToken))
-                item.uploadToken = uploadToken;
-            else
-            {
-                Debugger.Break();
-                //todo: how to handle upload failure here?
-            }
-
-            childPBar.Dispose();
-
-            uploadedFileCount++;
-            uploadedTotalBytes += (int)item.fileInfo.Length;
-            pbar.Tick(uploadedTotalBytes, $"Uploaded {uploadedFileCount} of {items.Count}");
-            //if (Interlocked.Read(ref iteration) % 25 == 0)
-            {
-                var tsTaken = DateTime.UtcNow.Subtract(dtStart).TotalMilliseconds;
-                var timePerCombination = tsTaken / uploadedFileCount;
-                pbar.EstimatedDuration = TimeSpan.FromMilliseconds((items.Count - uploadedFileCount) * timePerCombination);
-            }
-        }
-
-        pbar.Dispose();
-
-        //album duplicate checking needs to happen first
-        var requiredAlbumTitles = items.SelectMany(p => p.albums).Distinct(StringComparer.OrdinalIgnoreCase).Where(p => !string.IsNullOrWhiteSpace(p)).ToList();
-        //allAlbums = await _diskCacheSvc.GetAsync($"albums.json", () => _googlePhotosSvc.GetAlbumsAsync());
-        allAlbums = await _googlePhotosSvc.GetAlbumsAsync();
-        if (!requiredAlbumTitles.IsNullOrEmpty())
-            DoDuplicateAlbumsExist();
-        var dAlbums = await GetOrCreateAlbums();
-        if (dAlbums is null) return 1;
-
+        var albumsByTitle = await ResolveAlbumsAsync(items, cancellationToken);
+        if (albumsByTitle is null) return 1;
 
         _console.Write($"Adding {items.Count} media item(s) to your library...");
-        var uploadItems = items.Select(p => (p.uploadToken, p.fileInfo.Name)).ToList();
-        var res = await _googlePhotosSvc.AddMediaItemsAsync(uploadItems);
-        if (res is object)
+        var uploadItems = items.Select(p => (p.UploadToken!, p.FileInfo!.Name)).ToList();
+        var response = await _googlePhotosSvc.AddMediaItemsAsync(uploadItems, cancellationToken: cancellationToken);
+        if (response?.NewMediaItemResults is null)
         {
-            _console.WriteLine($" done! :)");
-            //iterate over results and assign the MediaItem object to our collection
-            foreach (var newMediaItem in res.newMediaItemResults)
-            {
-                var item = items.FirstOrDefault(p => p.uploadToken == newMediaItem.uploadToken);
-                if (item is null)
-                    throw new GenericException("could this happen?");
-                if (newMediaItem.status is object && newMediaItem.status.message == "Success")
-                    item.mediaItem = newMediaItem.mediaItem;
-                else
-                {
-                    Debugger.Break();
-                    //todo: handle error?
-                }
-            }
-
-            //todo: delete local files (if required)
-            //todo: delete empty folders?
-            if (deleteLocal)
-                foreach (var item in items.Where(p => p.mediaItem is object))
-                {
-                    _console.Write($"Deleting '{item.fileInfo.FullName}'...");
-                    File.Delete(item.fileInfo.FullName);//todo: try...catch here?
-                    _console.WriteLine($" deleted!");
-                }
-
-            if (dAlbums.Count > 0)
-            {
-                _console.WriteLine($"Adding media item(s) to albums...");
-                //todo: put progress bar here?
-                var table = new Table("Album Name", "Status") { Config = TableConfiguration.Markdown() };
-                foreach (var kvp in dAlbums)
-                {
-                    var ids = items.Where(p => p.albums.Contains(kvp.Value.title, StringComparer.OrdinalIgnoreCase)).Select(p => p.mediaItem.id).ToList();
-                    if (await _googlePhotosSvc.AddMediaItemsToAlbumAsync(kvp.Value.id, ids))
-                        table.AddRow(kvp.Value.title, $"{ids.Count} media item(s) added");
-                    else
-                        Debugger.Break();
-                }
-                Console.Write(table.ToString());
-                _console.WriteLine();
-            }
-
-            _console.WriteLine($"Upload completed, exiting.");
+            _console.Error.WriteLine(" failed.");
+            return 1;
         }
-        else
-            _console.WriteLine($" failed :(");
-        //todo: now handle albums
-        //todo: do we add media items to local cache here?
+        _console.WriteLine(" done.");
 
-        return 0;
-
-        bool DoDuplicateAlbumsExist()
+        var failures = 0;
+        foreach (var result in response.NewMediaItemResults)
         {
-            var duplicateAlbumsByTitle = GetAlbumDuplicates(allAlbums);
-
-            //album titles in google photos don't need to be unique, but we can't assign photos to an existing album
-            //if duplicate titles exist that match one of our required album titles...
-            if (duplicateAlbumsByTitle.Count > 0 && duplicateAlbumsByTitle.Any(p => requiredAlbumTitles.Contains(p.title, StringComparer.OrdinalIgnoreCase)))
+            var item = items.FirstOrDefault(p => p.UploadToken == result.UploadToken);
+            if (item is null) continue;
+            //Google reports per-item creation failures inside an otherwise successful batch response.
+            if (result.Status?.Message == "Success")
+                item.MediaItem = result.MediaItem;
+            else
             {
-                _console.WriteLine($"Duplicate album titles present, unable to assign media item(s) to albums.");
-                foreach (var album in duplicateAlbumsByTitle)
-                    _console.WriteLine($"{album.title}");
-                _console.WriteLine($"Please rename or merge the above albums to continue.");
-                return false;
+                failures++;
+                _logger.LogWarning("{ClassName} media item creation failed with status {StatusMessage}",
+                    nameof(Upload), result.Status?.Message);
             }
-            return true;
+        }
+        if (failures > 0)
+            _console.Error.WriteLine($"{failures} of {items.Count} media item(s) could not be created.");
+
+        await AssignToAlbumsAsync(items, albumsByTitle, cancellationToken);
+
+        if (DeleteLocal)
+            DeleteUploadedFiles(items);
+
+        _console.WriteLine("Upload completed.");
+        return failures > 0 ? 1 : 0;
+    }
+
+    private List<MediaFileItem> SelectUploadableFiles(string rootPath)
+    {
+        _console.Write("Checking for file(s)... ");
+        var allFiles = GetFiles(rootPath, SearchPattern);
+        if (allFiles.Count == 0)
+        {
+            _console.WriteLine($"0 files found at {rootPath}");
+            return [];
         }
 
-        async Task<Dictionary<string, Album>> GetOrCreateAlbums()
+        _console.WriteLine($"located {allFiles.Count} file(s), breakdown of file types;");
+        _console.WriteLine();
+
+        var headers = new[]
         {
-            //great there are no duplicate titles, lets get/create the missing albums
-            var d = new Dictionary<string, Album>();
-            foreach (var title in requiredAlbumTitles)
-            {
-                var album = allAlbums.FirstOrDefault(p => p.title.Equals(title, StringComparison.OrdinalIgnoreCase));
-                if (album is null)
-                    album = await _googlePhotosSvc.CreateAlbumAsync(title);
-                d.Add(title, album);
-            }
-            return d;
+            new ColumnHeader("File Extension"),
+            new ColumnHeader("Count", Alignment.Right),
+            new ColumnHeader("Size (MB)", Alignment.Right),
+            new ColumnHeader("Status")
+        };
+        var table = new Table(headers) { Config = TableConfiguration.Markdown() };
+        var byExtension = allFiles
+            .GroupBy(p => p.Extension, StringComparer.OrdinalIgnoreCase)
+            .OrderBy(g => g.Key, StringComparer.OrdinalIgnoreCase);
+        foreach (var group in byExtension)
+        {
+            var status = GooglePhotosService.IsFileUploadableByExtension(group.Key)
+                ? string.Empty
+                : "Unsupported file extension, will not be uploaded.";
+            table.AddRow(group.Key, group.Count(), (group.Sum(p => p.Length) / 1024d / 1024d).ToString("0.0"), status);
         }
+        _console.Write(table.ToString());
+        _console.WriteLine();
+
+        var items = allFiles
+            .Where(p => GooglePhotosService.IsFileUploadable(p.FullName))
+            .Select(p => new MediaFileItem { FileInfo = p, RelativePath = GetRelativePath(rootPath, p) })
+            .ToList();
+        if (items.Count == 0)
+        {
+            _console.WriteLine("0 uploadable file(s).");
+            return items;
+        }
+
+        foreach (var item in items)
+            item.Albums = GetAlbumTitles(item);
+
+        _console.WriteLine($"{items.Count} file(s) to be uploaded;");
+        _console.WriteLine();
+        var summary = new Table("Relative Path", "Size (KB)", "Album(s)") { Config = TableConfiguration.Markdown() };
+        foreach (var item in items)
+            summary.AddRow(item.RelativePath, (item.FileInfo!.Length / 1024d).ToString("#,##0"), string.Join(", ", item.Albums));
+        _console.Write(summary.ToString());
+        _console.WriteLine();
+        return items;
+    }
+
+    private string[] GetAlbumTitles(MediaFileItem item)
+    {
+        if (!string.IsNullOrWhiteSpace(AlbumTitle))
+            return [AlbumTitle];
+        if (!AlbumHierarchy)
+            return [];
+        var directory = System.IO.Path.GetDirectoryName(item.RelativePath);
+        return string.IsNullOrEmpty(directory)
+            ? []
+            : directory.Split(System.IO.Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);
+    }
+
+    private async Task<bool> UploadMediaBytesAsync(List<MediaFileItem> items, CancellationToken cancellationToken)
+    {
+        _console.WriteLine($"Now uploading {items.Count} file(s)...");
+        using var pbar = new ProgressBar(items.Count, $"Uploading {items.Count} media item(s)...", PbarOptions);
+        var uploaded = 0;
+        foreach (var item in items)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var sizeInKb = (int)Math.Max(1, item.FileInfo!.Length / 1024);
+            _childPbar = pbar.Spawn(sizeInKb, $"{item.FileInfo.Name} : 0 of {sizeInKb} Kb", ChildPbarOptions);
+            try
+            {
+                var uploadToken = await _googlePhotosSvc.UploadMediaAsync(item.FileInfo.FullName, cancellationToken: cancellationToken);
+                if (string.IsNullOrWhiteSpace(uploadToken))
+                {
+                    _console.Error.WriteLine($"Upload failed for '{item.RelativePath}'.");
+                    return false;
+                }
+                item.UploadToken = uploadToken;
+            }
+            finally
+            {
+                _childPbar.Dispose();
+                _childPbar = null;
+            }
+            uploaded++;
+            pbar.Tick($"Uploaded {uploaded} of {items.Count}");
+        }
+        return true;
+    }
+
+    private async Task<Dictionary<string, Album>?> ResolveAlbumsAsync(List<MediaFileItem> items, CancellationToken cancellationToken)
+    {
+        var requiredTitles = items
+            .SelectMany(p => p.Albums)
+            .Where(p => !string.IsNullOrWhiteSpace(p))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+        var albumsByTitle = new Dictionary<string, Album>(StringComparer.OrdinalIgnoreCase);
+        if (requiredTitles.Count == 0) return albumsByTitle;
+
+        var existingAlbums = await _googlePhotosSvc.GetAlbumsAsync(cancellationToken: cancellationToken);
+        //Album titles are not unique in Google Photos, so an ambiguous title cannot be resolved safely.
+        var duplicates = Albums.GetAlbumDuplicates(existingAlbums)
+            .Where(p => requiredTitles.Contains(p.Title, StringComparer.OrdinalIgnoreCase))
+            .ToList();
+        if (duplicates.Count > 0)
+        {
+            _console.Error.WriteLine("Duplicate album titles present, unable to assign media item(s) to albums:");
+            foreach (var album in duplicates)
+                _console.Error.WriteLine($"    {album.Title}");
+            _console.Error.WriteLine("Please rename or merge the above albums to continue.");
+            return null;
+        }
+
+        foreach (var title in requiredTitles)
+        {
+            var album = existingAlbums.FirstOrDefault(p => p.Title.Equals(title, StringComparison.OrdinalIgnoreCase))
+                ?? await _googlePhotosSvc.CreateAlbumAsync(title, cancellationToken);
+            if (album is null)
+            {
+                _console.Error.WriteLine($"Unable to create album '{title}'.");
+                return null;
+            }
+            albumsByTitle[title] = album;
+        }
+        return albumsByTitle;
+    }
+
+    private async Task AssignToAlbumsAsync(
+        List<MediaFileItem> items,
+        Dictionary<string, Album> albumsByTitle,
+        CancellationToken cancellationToken)
+    {
+        if (albumsByTitle.Count == 0) return;
+
+        _console.WriteLine("Adding media item(s) to albums...");
+        var table = new Table("Album Name", "Status") { Config = TableConfiguration.Markdown() };
+        foreach (var (title, album) in albumsByTitle)
+        {
+            var ids = items
+                .Where(p => p.MediaItem is not null && p.Albums.Contains(title, StringComparer.OrdinalIgnoreCase))
+                .Select(p => p.MediaItem!.Id)
+                .ToList();
+            if (ids.Count == 0) continue;
+            var added = await _googlePhotosSvc.AddMediaItemsToAlbumAsync(album.Id, ids, cancellationToken);
+            table.AddRow(album.Title, added ? $"{ids.Count} media item(s) added" : "failed");
+        }
+        _console.Write(table.ToString());
+        _console.WriteLine();
+    }
+
+    private void DeleteUploadedFiles(List<MediaFileItem> items)
+    {
+        foreach (var item in items.Where(p => p.MediaItem is not null))
+        {
+            try
+            {
+                File.Delete(item.FileInfo!.FullName);
+                _console.WriteLine($"Deleted '{item.RelativePath}'.");
+            }
+            catch (IOException ex)
+            {
+                _logger.LogWarning(ex, "{ClassName} could not delete an uploaded file", nameof(Upload));
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                _logger.LogWarning(ex, "{ClassName} was not permitted to delete an uploaded file", nameof(Upload));
+            }
+        }
+    }
+
+    private void OnUploadProgress(object? sender, UploadProgressEventArgs e)
+    {
+        if (_childPbar is null) return;
+        var uploadedKb = (int)(e.UploadedBytes / 1024);
+        _childPbar.Tick(uploadedKb, $"{e.FileName} : {uploadedKb} of {e.TotalBytes / 1024} Kb");
     }
 }
