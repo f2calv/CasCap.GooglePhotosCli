@@ -4,6 +4,9 @@
     <File Path="Directory.Build.props" />
     <File Path="Directory.Packages.props" />
   </Folder>
+  <Folder Name="/CasCap.Api.GooglePhotos/">
+    <Project Path="../CasCap.Api.GooglePhotos/src/CasCap.Api.GooglePhotos/CasCap.Api.GooglePhotos.csproj" />
+  </Folder>
   <Folder Name="/CasCap.GooglePhotosCli/">
     <Project Path="src/CasCap.GooglePhotosCli.Tests/CasCap.GooglePhotosCli.Tests.csproj" />
     <Project Path="src/CasCap.GooglePhotosCli/CasCap.GooglePhotosCli.csproj" />
