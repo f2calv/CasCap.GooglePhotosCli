@@ -149,4 +149,4 @@ Please raise anything on the [GitHub issues page](https://github.com/f2calv/CasC
 
 ## License
 
-CasCap.GooglePhotosCli is Copyright &copy; 2020 [@f2calv](https://github.com/f2calv) under the [MIT license](LICENSE).
+This project is released under [The Unlicense](LICENSE). See the [LICENSE](LICENSE) file for details.
