@@ -7,7 +7,8 @@
     // Features to add to the dev container. More info: https://containers.dev/features.
     "features": {
         "ghcr.io/devcontainers-extra/features/pre-commit:2": {},
-        "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
+        "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
+        "ghcr.io/devcontainers/features/powershell:2": {}
     },
     // Use 'forwardPorts' to make a list of ports inside the container available locally.
     // "forwardPorts": [5000, 5001],
@@ -32,6 +33,8 @@
                 "mutantdino.resourcemonitor",
                 "usernamehw.errorlens",
                 "davidanson.vscode-markdownlint",
+                "redhat.vscode-yaml",
+                "github.vscode-github-actions",
                 "ms-dotnettools.csharp"
             ]
         }
