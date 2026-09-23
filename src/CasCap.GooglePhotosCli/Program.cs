@@ -82,7 +82,7 @@ internal sealed class Program
         }
     }
 
-    private int OnExecute(CommandLineApplication app, IConsole console)
+    public int OnExecute(CommandLineApplication app, IConsole console)
     {
         console.WriteLine("You must specify a subcommand.");
         app.ShowHelp();
