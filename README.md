@@ -138,7 +138,7 @@ googlephotos logout
 
 ```powershell
 dotnet build CasCap.GooglePhotosCli.Debug.slnx
-dotnet test src/CasCap.GooglePhotosCli.Tests/CasCap.GooglePhotosCli.Tests.csproj
+dotnet test --project src/CasCap.GooglePhotosCli.Tests/CasCap.GooglePhotosCli.Tests.csproj
 ```
 
 The Debug solution resolves `CasCap.Api.GooglePhotos` through a local project reference, so it expects that repository to be cloned alongside this one. The Release solution uses the published NuGet package.
