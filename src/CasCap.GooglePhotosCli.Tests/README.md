@@ -23,7 +23,7 @@ This project pins the command surface the `googlephotos` tool exposes and the co
 ## Running the tests
 
 ```powershell
-dotnet test src/CasCap.GooglePhotosCli.Tests/CasCap.GooglePhotosCli.Tests.csproj
+dotnet test --project src/CasCap.GooglePhotosCli.Tests/CasCap.GooglePhotosCli.Tests.csproj
 ```
 
 `global.json` selects Microsoft.Testing.Platform, so a single method can be run directly:
