@@ -141,6 +141,10 @@ dotnet build CasCap.GooglePhotosCli.Debug.slnx
 dotnet test --project src/CasCap.GooglePhotosCli.Tests/CasCap.GooglePhotosCli.Tests.csproj
 ```
 
+Within the CLI project, `Program.cs` owns the attributed root command and help/version behavior,
+while `AppHost.cs` owns configuration layering, dependency injection, command dispatch, deferred
+credential validation, and command-line error exit codes.
+
 The Debug solution resolves `CasCap.Api.GooglePhotos` through a local project reference, so it expects that repository to be cloned alongside this one. The Release solution uses the published NuGet package.
 
 ## Feedback and issues
