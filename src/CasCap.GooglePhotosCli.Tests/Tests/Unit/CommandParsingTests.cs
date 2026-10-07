@@ -85,7 +85,7 @@ public sealed class CommandParsingTests
     private static string[] GetCommandNames(CommandLineApplication app)
         => [.. app.Commands.Select(p => p.Name!).Order(StringComparer.Ordinal)];
 
-    private static CommandLineApplication CreateApplication()
+    private static CommandLineApplication<Program> CreateApplication()
     {
         //Dummy credentials keep the model activatable without contacting Google or reading a real OAuth cache.
         var services = new ServiceCollection()
