@@ -42,7 +42,7 @@ internal sealed class Upload(ILogger<Upload> logger, IConsole console, Lazy<Goog
         var exitCode = await base.OnExecuteAsync(app, cancellationToken);
         if (exitCode != 0) return exitCode;
 
-        _googlePhotosSvc.UploadProgressEvent += OnUploadProgress;
+        GooglePhotosSvc.UploadProgressEvent += OnUploadProgress;
 
         var rootPath = System.IO.Path.GetFullPath(Path);
         var items = SelectUploadableFiles(rootPath);
@@ -60,7 +60,7 @@ internal sealed class Upload(ILogger<Upload> logger, IConsole console, Lazy<Goog
 
         _console.Write($"Adding {items.Count} media item(s) to your library...");
         var uploadItems = items.Select(p => (p.UploadToken!, p.FileInfo!.Name)).ToList();
-        var response = await _googlePhotosSvc.AddMediaItemsAsync(uploadItems, cancellationToken: cancellationToken);
+        var response = await GooglePhotosSvc.AddMediaItemsAsync(uploadItems, cancellationToken: cancellationToken);
         if (response?.NewMediaItemResults is null)
         {
             _console.Error.WriteLine(" failed.");
@@ -176,7 +176,7 @@ internal sealed class Upload(ILogger<Upload> logger, IConsole console, Lazy<Goog
             _childPbar = pbar.Spawn(sizeInKb, $"{item.FileInfo.Name} : 0 of {sizeInKb} Kb", ChildPbarOptions);
             try
             {
-                var uploadToken = await _googlePhotosSvc.UploadMediaAsync(item.FileInfo.FullName, cancellationToken: cancellationToken);
+                var uploadToken = await GooglePhotosSvc.UploadMediaAsync(item.FileInfo.FullName, cancellationToken: cancellationToken);
                 if (string.IsNullOrWhiteSpace(uploadToken))
                 {
                     _console.Error.WriteLine($"Upload failed for '{item.RelativePath}'.");
@@ -205,7 +205,7 @@ internal sealed class Upload(ILogger<Upload> logger, IConsole console, Lazy<Goog
         var albumsByTitle = new Dictionary<string, Album>(StringComparer.OrdinalIgnoreCase);
         if (requiredTitles.Count == 0) return albumsByTitle;
 
-        var existingAlbums = await _googlePhotosSvc.GetAlbumsAsync(cancellationToken: cancellationToken);
+        var existingAlbums = await GooglePhotosSvc.GetAlbumsAsync(cancellationToken: cancellationToken);
         //Album titles are not unique in Google Photos, so an ambiguous title cannot be resolved safely.
         var duplicates = Albums.GetAlbumDuplicates(existingAlbums)
             .Where(p => requiredTitles.Contains(p.Title, StringComparer.OrdinalIgnoreCase))
@@ -222,7 +222,7 @@ internal sealed class Upload(ILogger<Upload> logger, IConsole console, Lazy<Goog
         foreach (var title in requiredTitles)
         {
             var album = existingAlbums.FirstOrDefault(p => p.Title.Equals(title, StringComparison.OrdinalIgnoreCase))
-                ?? await _googlePhotosSvc.CreateAlbumAsync(title, cancellationToken);
+                ?? await GooglePhotosSvc.CreateAlbumAsync(title, cancellationToken);
             if (album is null)
             {
                 _console.Error.WriteLine($"Unable to create album '{title}'.");
@@ -249,7 +249,7 @@ internal sealed class Upload(ILogger<Upload> logger, IConsole console, Lazy<Goog
                 .Select(p => p.MediaItem!.Id)
                 .ToList();
             if (ids.Count == 0) continue;
-            var added = await _googlePhotosSvc.AddMediaItemsToAlbumAsync(album.Id, ids, cancellationToken);
+            var added = await GooglePhotosSvc.AddMediaItemsToAlbumAsync(album.Id, ids, cancellationToken);
             table.AddRow(title, added ? $"{ids.Count} media item(s) added" : "failed");
         }
         _console.Write(table.ToString());

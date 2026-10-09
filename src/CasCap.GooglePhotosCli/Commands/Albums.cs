@@ -31,7 +31,7 @@ internal sealed class Albums(ILogger<Albums> logger, IConsole console, Lazy<Goog
             var exitCode = await base.OnExecuteAsync(app, cancellationToken);
             if (exitCode != 0) return exitCode;
 
-            var albums = await _googlePhotosSvc.GetAlbumsAsync(cancellationToken: cancellationToken);
+            var albums = await GooglePhotosSvc.GetAlbumsAsync(cancellationToken: cancellationToken);
             if (albums.Count == 0)
             {
                 _console.WriteLine("No albums found. Only albums created by this tool are visible.");
@@ -68,7 +68,7 @@ internal sealed class Albums(ILogger<Albums> logger, IConsole console, Lazy<Goog
             var exitCode = await base.OnExecuteAsync(app, cancellationToken);
             if (exitCode != 0) return exitCode;
 
-            var album = await _googlePhotosSvc.GetOrCreateAlbumAsync(Title, cancellationToken: cancellationToken);
+            var album = await GooglePhotosSvc.GetOrCreateAlbumAsync(Title, cancellationToken: cancellationToken);
             if (album is null)
             {
                 _console.Error.WriteLine($"Unable to create album '{Title}'. Check that the EditAppCreatedData scope is granted.");
@@ -130,14 +130,14 @@ internal sealed class Albums(ILogger<Albums> logger, IConsole console, Lazy<Goog
                 return 0;
             Directory.CreateDirectory(rootPath);
 
-            var album = await _googlePhotosSvc.GetAlbumByTitleAsync(Title, cancellationToken: cancellationToken);
+            var album = await GooglePhotosSvc.GetAlbumByTitleAsync(Title, cancellationToken: cancellationToken);
             if (album is null)
             {
                 _console.Error.WriteLine($"Album with title '{Title}' not found. Only albums created by this tool are visible.");
                 return 1;
             }
 
-            var mediaItems = await _googlePhotosSvc
+            var mediaItems = await GooglePhotosSvc
                 .GetMediaItemsByAlbumAsync(album.Id, cancellationToken: cancellationToken)
                 .ToListAsync(cancellationToken);
             if (mediaItems.Count == 0)
@@ -179,7 +179,7 @@ internal sealed class Albums(ILogger<Albums> logger, IConsole console, Lazy<Goog
                         return 1;
                     }
 
-                    var bytes = await _googlePhotosSvc.DownloadBytesAsync(
+                    var bytes = await GooglePhotosSvc.DownloadBytesAsync(
                         item.MediaItem, MaxWidth, MaxHeight, Crop, Exif, cancellationToken: cancellationToken);
                     if (bytes is null)
                     {
