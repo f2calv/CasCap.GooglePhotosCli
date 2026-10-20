@@ -153,4 +153,4 @@ Please raise anything on the [GitHub issues page](https://github.com/f2calv/CasC
 
 ## License
 
-This project is released under [The Unlicense](LICENSE). See the [LICENSE](LICENSE) file for details.
+This project is released under the [MIT License](LICENSE). See the [LICENSE](LICENSE) file for details.
