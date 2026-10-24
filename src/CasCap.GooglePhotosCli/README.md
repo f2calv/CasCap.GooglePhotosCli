@@ -40,7 +40,7 @@ flowchart TD
     D --> E["GooglePhotosOptions and deferred command authentication"]
 ```
 
-Configuration binds to the concrete [GooglePhotosOptions](https://github.com/f2calv/CasCap.Api.GooglePhotos/blob/4.0.5/src/CasCap.Api.GooglePhotos/Models/_GooglePhotosOptions.cs) type at `CasCap:GooglePhotosOptions` (linked to the published dependency's definition). Required user/client credentials and scopes are documented in the [root configuration examples](../../README.md#configuration-examples). The [shipped defaults](appsettings.json) request the three supported Library API scopes.
+Configuration binds to the concrete [GooglePhotosOptions](https://github.com/f2calv/CasCap.Api.GooglePhotos/blob/4.0.6/src/CasCap.Api.GooglePhotos/Models/_GooglePhotosOptions.cs) type at `CasCap:GooglePhotosOptions` (linked to the published dependency's definition). Required user/client credentials and scopes are documented in the [root configuration examples](../../README.md#configuration-examples). The [shipped defaults](appsettings.json) request the three supported Library API scopes.
 
 Host startup validation is removed so help can be parsed without credentials. Options validation still runs when an API command first resolves the lazy client, and logout still reads validated options. The default OAuth cache is the platform application-data directory plus `googlephotos/auth`; logout recursively deletes the configured cache directory.
 
@@ -48,4 +48,4 @@ Host startup validation is removed so help can be parsed without credentials. Op
 
 The [shared command base](Commands/Base/CommandBase.cs) logs in before API operations. Transfers have no CLI-owned persistent journal. Upload deletion is conditional on media-item creation, not album assignment; see the root [transfer warnings](../../README.md#transfer-behavior).
 
-The [offline tests](../CasCap.GooglePhotosCli.Tests/README.md) cover command parsing and album-table rendering, not live authentication or successful transfers. Published `1.1.3` keeps the same command/configuration behavior but predates the host file split; see the root [availability note](../../README.md#quick-start).
+The [offline tests](../CasCap.GooglePhotosCli.Tests/README.md) cover command parsing and album-table rendering, not live authentication or successful transfers.

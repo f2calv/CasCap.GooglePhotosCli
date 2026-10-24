@@ -20,10 +20,10 @@ Google's [Photos API restrictions](https://developers.google.com/photos/support/
 
 ## Quick Start
 
-Install the [.NET SDK](https://dotnet.microsoft.com/download/dotnet/10.0) to manage global tools and the .NET 10 runtime to run this `net10.0` tool. [NuGet](https://www.nuget.org/packages/googlephotos) currently publishes version `1.1.3`:
+Install the [.NET SDK](https://dotnet.microsoft.com/download/dotnet/10.0) to manage global tools and the .NET 10 runtime to run this `net10.0` tool, available from [NuGet](https://www.nuget.org/packages/googlephotos):
 
 ```powershell
-dotnet tool install --global googlephotos --version 1.1.3
+dotnet tool install --global googlephotos
 googlephotos --help
 ```
 
@@ -34,8 +34,6 @@ dotnet tool update --global googlephotos
 ```
 
 After [Google Cloud setup](#google-cloud-setup) and [configuration](#configuration), `googlephotos albums list` authenticates and displays only app-created albums. The initial browser consent cannot be replaced by `--yes`.
-
-This README describes the current checkout. Published `1.1.3` has the same commands, configuration-provider order and deferred credential validation; its host setup is still in `Program.cs` rather than the separate `AppHost.cs` shown by current source links.
 
 ## Google Cloud setup
 
@@ -48,7 +46,7 @@ Full setup guidance lives in the [library documentation](https://github.com/f2ca
 
 ## Configuration
 
-The concrete [GooglePhotosOptions](https://github.com/f2calv/CasCap.Api.GooglePhotos/blob/4.0.5/src/CasCap.Api.GooglePhotos/Models/_GooglePhotosOptions.cs) configuration is bound at `CasCap:GooglePhotosOptions`. The [host configuration](https://github.com/f2calv/CasCap.GooglePhotosCli/blob/1.1.3/src/CasCap.GooglePhotosCli/Program.cs) loads, in ascending precedence, shipped `appsettings.json`, working-directory `appsettings.json`, the tool's .NET User Secrets, and environment variables. Command-line options do not provide credential overrides. These immutable source links match the published dependency and tool versions.
+The concrete [GooglePhotosOptions](https://github.com/f2calv/CasCap.Api.GooglePhotos/blob/4.0.6/src/CasCap.Api.GooglePhotos/Models/_GooglePhotosOptions.cs) configuration is bound at `CasCap:GooglePhotosOptions`. The [host configuration](https://github.com/f2calv/CasCap.GooglePhotosCli/blob/6bd51e8/src/CasCap.GooglePhotosCli/AppHost.cs) loads, in ascending precedence, shipped `appsettings.json`, working-directory `appsettings.json`, the tool's .NET User Secrets, and environment variables. Command-line options do not provide credential overrides.
 
 Do not edit the installed tool store. For the current checkout, supply credentials in your shell:
 
