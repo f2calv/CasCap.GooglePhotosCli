@@ -26,7 +26,7 @@ internal sealed class MediaItems(ILogger<MediaItems> logger, IConsole console, L
             var exitCode = await base.OnExecuteAsync(app, cancellationToken);
             if (exitCode != 0) return exitCode;
 
-            var mediaItems = await _googlePhotosSvc
+            var mediaItems = await GooglePhotosSvc
                 .GetMediaItemsAsync(cancellationToken: cancellationToken)
                 .ToListAsync(cancellationToken);
             if (mediaItems.Count == 0)

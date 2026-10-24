@@ -11,7 +11,7 @@ internal abstract class CommandBase(ILogger logger, IConsole console, Lazy<Googl
     protected readonly IConsole _console = console;
 
     /// <summary>Google Photos Library API client, activated on first use.</summary>
-    protected GooglePhotosService _googlePhotosSvc => googlePhotosSvc.Value;
+    protected GooglePhotosService GooglePhotosSvc => googlePhotosSvc.Value;
 
     /// <summary>Progress bar styling shared by every long-running command.</summary>
     protected static ProgressBarOptions PbarOptions { get; } = new()
@@ -41,8 +41,8 @@ internal abstract class CommandBase(ILogger logger, IConsole console, Lazy<Googl
     /// <returns><see langword="true"/> when the user is authenticated.</returns>
     public virtual async Task<int> OnExecuteAsync(CommandLineApplication app, CancellationToken cancellationToken)
     {
-        _googlePhotosSvc.PagingEvent += OnPagingEvent;
-        if (!await _googlePhotosSvc.LoginAsync(cancellationToken))
+        GooglePhotosSvc.PagingEvent += OnPagingEvent;
+        if (!await GooglePhotosSvc.LoginAsync(cancellationToken))
         {
             _console.Error.WriteLine("Login failed. Check the configured OAuth client and requested scopes.");
             return 1;

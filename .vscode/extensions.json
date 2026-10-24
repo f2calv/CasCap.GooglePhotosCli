@@ -1,5 +1,7 @@
 {
   "recommendations": [
+    "editorconfig.editorconfig",
+    "esbenp.prettier-vscode",
     "ms-vscode.powershell",
     "ms-azuretools.vscode-containers",
     "ms-vscode-remote.vscode-remote-extensionpack",
