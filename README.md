@@ -46,7 +46,7 @@ Full setup guidance lives in the [library documentation](https://github.com/f2ca
 
 ## Configuration
 
-The concrete [GooglePhotosOptions](https://github.com/f2calv/CasCap.Api.GooglePhotos/blob/4.0.6/src/CasCap.Api.GooglePhotos/Models/_GooglePhotosOptions.cs) configuration is bound at `CasCap:GooglePhotosOptions`. The [host configuration](https://github.com/f2calv/CasCap.GooglePhotosCli/blob/6bd51e8/src/CasCap.GooglePhotosCli/AppHost.cs) loads, in ascending precedence, shipped `appsettings.json`, working-directory `appsettings.json`, the tool's .NET User Secrets, and environment variables. Command-line options do not provide credential overrides.
+The concrete [GooglePhotosOptions](https://github.com/f2calv/CasCap.Api.GooglePhotos/blob/4.0.7/src/CasCap.Api.GooglePhotos/Models/GooglePhotosOptions.cs) configuration is bound at `CasCap:GooglePhotosOptions`. The [host configuration](https://github.com/f2calv/CasCap.GooglePhotosCli/blob/6bd51e8/src/CasCap.GooglePhotosCli/AppHost.cs) loads, in ascending precedence, shipped `appsettings.json`, working-directory `appsettings.json`, the tool's .NET User Secrets, and environment variables. Command-line options do not provide credential overrides.
 
 Do not edit the installed tool store. For the current checkout, supply credentials in your shell:
 
