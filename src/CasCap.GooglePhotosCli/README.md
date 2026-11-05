@@ -28,19 +28,36 @@ These are concrete internal command types, not a public library interface:
 
 There is no Picker command, whole-library sync or duplicate-media scan. `albums list --duplicates` only compares app-created album titles.
 
-## Configuration Hierarchy
+## Dependency Graph
 
-The [AppHost](AppHost.cs) loads the following providers in order; later values override earlier ones:
+These are the tool's seven direct runtime package references in Release configuration.
+Debug replaces only the Google Photos library with a sibling project reference.
 
 ```mermaid
-flowchart TD
-    A["Shipped appsettings.json"] --> B["Working-directory appsettings.json"]
-    B --> C["Tool User Secrets"]
-    C --> D["Environment variables"]
-    D --> E["GooglePhotosOptions and deferred command authentication"]
+graph TD
+  tool([googlephotos]) --> photos[CasCap.Api.GooglePhotos]
+  tool --> tables[BetterConsoleTables]
+  tool --> command[McMaster.Extensions.CommandLineUtils]
+  tool --> hostingcommand[McMaster.Extensions.Hosting.CommandLine]
+  tool --> secrets[Microsoft.Extensions.Configuration.UserSecrets]
+  tool --> hosting[Microsoft.Extensions.Hosting]
+  tool --> progress[ShellProgressBar]
+  classDef owned fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a
+  classDef published fill:#dcfce7,stroke:#15803d,color:#14532d
+  class tool owned
+  class photos,tables,command,hostingcommand,secrets,hosting,progress published
 ```
 
-Configuration binds to the concrete [GooglePhotosOptions](https://github.com/f2calv/CasCap.Api.GooglePhotos/blob/4.0.6/src/CasCap.Api.GooglePhotos/Models/_GooglePhotosOptions.cs) type at `CasCap:GooglePhotosOptions` (linked to the published dependency's definition). Required user/client credentials and scopes are documented in the [root configuration examples](../../README.md#configuration-examples). The [shipped defaults](appsettings.json) request the three supported Library API scopes.
+## Configuration Hierarchy
+
+The [AppHost](AppHost.cs) loads these providers in order; later values override earlier ones:
+
+1. Shipped `appsettings.json`
+2. Working-directory `appsettings.json`
+3. Tool User Secrets
+4. Environment variables
+
+Configuration binds to the concrete [GooglePhotosOptions](https://github.com/f2calv/CasCap.Api.GooglePhotos/blob/4.0.8/src/CasCap.Api.GooglePhotos/Models/GooglePhotosOptions.cs) type at `CasCap:GooglePhotosOptions` (linked to the published dependency's definition). Required user/client credentials and scopes are documented in the [root configuration examples](../../README.md#configuration-examples). The [shipped defaults](appsettings.json) request the three supported Library API scopes.
 
 Host startup validation is removed so help can be parsed without credentials. Options validation still runs when an API command first resolves the lazy client, and logout still reads validated options. The default OAuth cache is the platform application-data directory plus `googlephotos/auth`; logout recursively deletes the configured cache directory.
 

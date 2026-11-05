@@ -46,7 +46,7 @@ Full setup guidance lives in the [library documentation](https://github.com/f2ca
 
 ## Configuration
 
-The concrete [GooglePhotosOptions](https://github.com/f2calv/CasCap.Api.GooglePhotos/blob/4.0.7/src/CasCap.Api.GooglePhotos/Models/GooglePhotosOptions.cs) configuration is bound at `CasCap:GooglePhotosOptions`. The [host configuration](https://github.com/f2calv/CasCap.GooglePhotosCli/blob/6bd51e8/src/CasCap.GooglePhotosCli/AppHost.cs) loads, in ascending precedence, shipped `appsettings.json`, working-directory `appsettings.json`, the tool's .NET User Secrets, and environment variables. Command-line options do not provide credential overrides.
+The concrete [GooglePhotosOptions](https://github.com/f2calv/CasCap.Api.GooglePhotos/blob/4.0.8/src/CasCap.Api.GooglePhotos/Models/GooglePhotosOptions.cs) configuration is bound at `CasCap:GooglePhotosOptions`. The [host configuration](https://github.com/f2calv/CasCap.GooglePhotosCli/blob/6bd51e8/src/CasCap.GooglePhotosCli/AppHost.cs) loads, in ascending precedence, shipped `appsettings.json`, working-directory `appsettings.json`, the tool's .NET User Secrets, and environment variables. Command-line options do not provide credential overrides.
 
 Do not edit the installed tool store. For the current checkout, supply credentials in your shell:
 
@@ -177,16 +177,26 @@ There is no stable machine-readable JSON output mode. Commands emit human-readab
 
 ## Data Flow
 
+Library API operations use the configured OAuth application and cannot enumerate unrelated library
+content. See the [tool dependency graph](https://github.com/f2calv/CasCap.GooglePhotosCli/blob/main/src/CasCap.GooglePhotosCli/README.md#dependency-graph)
+for the libraries behind these commands.
+
 ```mermaid
 flowchart TD
-    A(["Configured CLI command"]) --> B["Browser consent or cached OAuth grant"]
-    B --> C{"Operation"}
-    C -->|Upload| D["Local files: upload bytes"]
-    D --> E["Create app-owned media items"]
-    E --> F["Optional album assignment"]
-    F --> G["Optional local deletion after media creation"]
-    C -->|List or download| H["Library API: app-created content only"]
-    H --> I["Console table or local download files"]
+  command([Configured CLI command]) --> oauth[Browser consent or cached OAuth grant]
+  oauth --> operation{Operation}
+  operation -->|Upload| upload[Upload local bytes]
+  upload --> create[Create app-owned media items]
+  create --> assignment[Optional album assignment]
+  assignment -->|even if assignment reports failure| deletion["Optional local deletion<br/>after media creation"]
+  operation -->|List or download| library["Library API: app-created content only"]
+  library --> output([Console table or local download files])
+  classDef owned fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a
+  classDef external fill:#fef3c7,stroke:#d97706,color:#78350f
+  classDef terminal fill:#dcfce7,stroke:#15803d,color:#14532d
+  class command,upload,assignment,deletion owned
+  class oauth,create,library external
+  class output terminal
 ```
 
 The diagram describes Library API operations, not a Picker or whole-library path. All essential behavior is also explained in text for package renderers without Mermaid support.
@@ -197,9 +207,12 @@ Use the .NET 10 SDK. The [source delivery-unit README](https://github.com/f2calv
 
 ```powershell
 dotnet build CasCap.GooglePhotosCli.Release.slnx -c Release
+dotnet test --solution CasCap.GooglePhotosCli.Release.slnx -c Release --no-build --no-restore --max-parallel-test-modules 1
 ```
 
 The Debug configuration resolves `CasCap.Api.GooglePhotos` through a sibling local project reference. Release uses the published NuGet dependency; no sibling checkout is required.
+Run these commands from the repository root. The test suite is entirely offline; do not run
+authenticated commands merely to validate a dependency update.
 
 ## Feedback and issues
 
