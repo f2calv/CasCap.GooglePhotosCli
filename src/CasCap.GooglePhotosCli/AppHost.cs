@@ -47,8 +47,11 @@ internal static class AppHost
                         options.FileDataStoreFullPathOverride = DefaultDataStorePath;
                 });
                 // AddGooglePhotos validates on host start, which would make --help fail before credentials exist.
-                // The validators still run when options are first read by a command that needs Google.
+                // Remove both .NET 11 startup aliases; options still validate on first use by a Google command.
+                services.RemoveAll<IAsyncStartupValidator>();
+#pragma warning disable SYSLIB0066
                 services.RemoveAll<IStartupValidator>();
+#pragma warning restore SYSLIB0066
             });
 
         try
