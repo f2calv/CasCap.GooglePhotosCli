@@ -4,7 +4,6 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net11.0</TargetFramework>
     <AssemblyName>googlephotos</AssemblyName>
-    <UserSecretsId>255ba51e-c46d-40c4-9420-80d485ea10fe</UserSecretsId>
   </PropertyGroup>
 
   <PropertyGroup>
