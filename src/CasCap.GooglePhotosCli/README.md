@@ -1,12 +1,12 @@
 # CasCap.GooglePhotosCli
 
-This `net11.0` executable is the source delivery unit for the `googlephotos` .NET global tool. It provides Library API commands for uploading local media and listing or downloading content created by the configured OAuth application, not a general Google Photos backup client.
+This `net10.0`/`net11.0` executable is the source delivery unit for the `googlephotos` .NET global tool. It provides Library API commands for uploading local media and listing or downloading content created by the configured OAuth application, not a general Google Photos backup client.
 
 ## Usage
 
 Use the [consumer README](../../README.md) for installation, Google Cloud setup, complete credential examples and the command/option contract. The package ID and executable name are both `googlephotos`; the root README is embedded in that package.
 
-For source development, use the .NET 11 RC3 SDK pinned in `global.json` and build from the repository root:
+For source development, use the .NET 11 SDK pinned in `global.json` and build from the repository root:
 
 ```powershell
 dotnet build CasCap.GooglePhotosCli.Release.slnx -c Release
