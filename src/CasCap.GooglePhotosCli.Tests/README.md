@@ -1,6 +1,6 @@
 # CasCap.GooglePhotosCli Tests
 
-This .NET 10 test project checks the command surface of `googlephotos` and the console rendering of API responses with optional fields. Its source-declared cases are credential-free and contact no network; they do not verify live OAuth, transfers or the full application host.
+This .NET 10/11 test project checks the command surface of `googlephotos` and the console rendering of API responses with optional fields. Its source-declared cases are credential-free and contact no network; they do not verify live OAuth, transfers or the full application host.
 
 ## Tests
 
@@ -38,7 +38,7 @@ No `Integration/` folder exists because the project contains only offline checks
 
 ## Prerequisites and Execution
 
-Use the .NET 10 SDK and Microsoft.Testing.Platform selected by [global.json](../../global.json). Run from the repository root after choosing the configuration; Release uses the published dependency, while Debug requires the sibling library checkout described in the [source README](../CasCap.GooglePhotosCli/README.md).
+Use the .NET 11 SDK and Microsoft.Testing.Platform selected by [global.json](../../global.json). Run from the repository root after choosing the configuration; Release uses the published dependency, while Debug requires the sibling library checkout described in the [source README](../CasCap.GooglePhotosCli/README.md).
 
 ```powershell
 dotnet test --project src/CasCap.GooglePhotosCli.Tests/CasCap.GooglePhotosCli.Tests.csproj -c Release

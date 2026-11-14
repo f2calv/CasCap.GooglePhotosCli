@@ -6,7 +6,7 @@
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
-      "program": "${workspaceFolder}/src/CasCap.GooglePhotosCli/bin/Debug/net10.0/googlephotos.dll",
+      "program": "${workspaceFolder}/src/CasCap.GooglePhotosCli/bin/Debug/net11.0/googlephotos.dll",
       "args": ["${input:commandLine}"],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",
