@@ -20,7 +20,7 @@ Google's [Photos API restrictions](https://developers.google.com/photos/support/
 
 ## Quick Start
 
-Install the [.NET SDK](https://dotnet.microsoft.com/download/dotnet) to manage global tools and the runtime required by your selected [NuGet tool version](https://www.nuget.org/packages/googlephotos). This checkout targets `net10.0` and `net11.0` and requires the .NET 11 SDK pinned in `global.json`; that does not imply a .NET 11 tool version has been published.
+Install the [.NET SDK](https://dotnet.microsoft.com/download/dotnet) to manage global tools and the runtime required by your selected [NuGet tool version](https://www.nuget.org/packages/googlephotos). This checkout targets `net10.0` and `net11.0` and requires a stable .NET 11 SDK; that does not imply a .NET 11 tool version has been published.
 
 ```powershell
 dotnet tool install --global googlephotos
@@ -203,7 +203,7 @@ The diagram describes Library API operations, not a Picker or whole-library path
 
 ## Development
 
-Use the .NET 11 SDK pinned in `global.json`. The [source delivery-unit README](https://github.com/f2calv/CasCap.GooglePhotosCli/blob/main/src/CasCap.GooglePhotosCli/README.md) covers host wiring; the [test README](https://github.com/f2calv/CasCap.GooglePhotosCli/blob/main/src/CasCap.GooglePhotosCli.Tests/README.md) covers the offline suite.
+Use a stable .NET 11 SDK. The [source delivery-unit README](https://github.com/f2calv/CasCap.GooglePhotosCli/blob/main/src/CasCap.GooglePhotosCli/README.md) covers host wiring; the [test README](https://github.com/f2calv/CasCap.GooglePhotosCli/blob/main/src/CasCap.GooglePhotosCli.Tests/README.md) covers the offline suite.
 
 ```powershell
 dotnet build CasCap.GooglePhotosCli.Release.slnx -c Release
