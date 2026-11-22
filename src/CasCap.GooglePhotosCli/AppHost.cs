@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Configuration;
+using CasCap.Common.Extensions;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 
@@ -19,19 +19,11 @@ internal static class AppHost
     {
         // TODO: Register console logging so injected ILogger diagnostics are observable after output behavior is reviewed.
         var host = new HostBuilder()
-            .ConfigureAppConfiguration((_, builder) =>
-            {
-                // The tool runs from the global tool store, so shipped defaults load from the assembly
-                // directory while a per-project override loads from the working directory.
-                builder.SetBasePath(AppContext.BaseDirectory)
-                    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
-                    .AddJsonFile(
-                        Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json"),
-                        optional: true,
-                        reloadOnChange: false)
-                    .AddUserSecrets<Program>(optional: true)
-                    .AddEnvironmentVariables();
-            })
+            .ConfigureAppConfiguration((_, builder) => builder
+                .AddGlobalToolConfiguration(
+                    typeof(Program).Assembly,
+                    AppContext.BaseDirectory,
+                    Directory.GetCurrentDirectory()))
             .ConfigureServices((context, services) =>
             {
                 services.AddSingleton(PhysicalConsole.Singleton);

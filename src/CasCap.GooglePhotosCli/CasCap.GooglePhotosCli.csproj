@@ -40,9 +40,13 @@
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
     <ProjectReference Include="..\..\..\CasCap.Api.GooglePhotos\src\CasCap.Api.GooglePhotos\CasCap.Api.GooglePhotos.csproj" />
+    <ProjectReference Include="..\..\..\CasCap.Common\src\CasCap.Common.Configuration\CasCap.Common.Configuration.csproj" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)'=='Release'">
     <PackageReference Include="CasCap.Api.GooglePhotos" />
+    <!-- TODO: Advance the configuration package pin after AddGlobalToolConfiguration ships in the
+         next immutable CasCap.Common release; Debug uses source rather than duplicating the helper. -->
+    <PackageReference Include="CasCap.Common.Configuration" />
   </ItemGroup>
 
   <ItemGroup>
