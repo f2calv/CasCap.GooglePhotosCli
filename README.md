@@ -46,7 +46,10 @@ Full setup guidance lives in the [library documentation](https://github.com/f2ca
 
 ## Configuration
 
-The concrete [GooglePhotosOptions](https://github.com/f2calv/CasCap.Api.GooglePhotos/blob/4.0.8/src/CasCap.Api.GooglePhotos/Models/GooglePhotosOptions.cs) configuration is bound at `CasCap:GooglePhotosOptions`. The [host configuration](https://github.com/f2calv/CasCap.GooglePhotosCli/blob/6bd51e8/src/CasCap.GooglePhotosCli/AppHost.cs) loads, in ascending precedence, shipped `appsettings.json`, working-directory `appsettings.json`, the tool's .NET User Secrets, and environment variables. Command-line options do not provide credential overrides.
+The concrete [GooglePhotosOptions](https://github.com/f2calv/CasCap.Api.GooglePhotos/blob/4.0.8/src/CasCap.Api.GooglePhotos/Models/GooglePhotosOptions.cs) configuration is bound at `CasCap:GooglePhotosOptions`. The current [host configuration](src/CasCap.GooglePhotosCli/AppHost.cs) loads, in ascending precedence, shipped `appsettings.json`, working-directory `appsettings.json`, optional working-directory `appsettings.Local.json`, the tool's .NET User Secrets, and environment variables. Command-line options do not provide credential overrides.
+
+The local overlay is gitignored and does not enable JSON reload. User Secrets override duplicate
+local values. Published tools gain this behavior after the shared helper and consuming CLI are released.
 
 Do not edit the installed tool store. For the current checkout, supply credentials in your shell:
 
@@ -60,7 +63,8 @@ $env:CasCap__GooglePhotosOptions__ClientSecret = "your-client-secret"
 
 ## Configuration Examples
 
-A minimal working-directory `appsettings.json` for read-only listing/downloading (replace the synthetic credentials locally and keep the file out of Git):
+A minimal working-directory `appsettings.Local.json` for read-only listing/downloading
+(replace the synthetic credentials locally; the file is gitignored):
 
 ```json
 {

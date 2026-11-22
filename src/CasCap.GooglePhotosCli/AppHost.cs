@@ -61,7 +61,7 @@ internal static class AppHost
                 await Console.Error.WriteLineAsync($"    {failure}");
             await Console.Error.WriteLineAsync();
             await Console.Error.WriteLineAsync(
-                "Set CasCap:GooglePhotosOptions via user secrets or environment variables, for example:");
+                "Set CasCap:GooglePhotosOptions via user secrets, working-directory appsettings.Local.json or environment variables, for example:");
             await Console.Error.WriteLineAsync(
                 "    CasCap__GooglePhotosOptions__User, CasCap__GooglePhotosOptions__ClientId, CasCap__GooglePhotosOptions__ClientSecret");
             await Console.Error.WriteLineAsync(
